@@ -7,6 +7,7 @@
     <title>Registrar Ecografía</title>
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <style>
         * { box-sizing: border-box; }
@@ -179,6 +180,13 @@
 
         .salir:hover { background: #475569; }
 
+        .flatpickr-day.disabled,
+        .flatpickr-day.disabled:hover {
+            color: #cbd5e1 !important;
+            cursor: not-allowed !important;
+            background: #f1f5f9 !important;
+        }
+
         @media (max-width: 900px) {
             .header {
                 height: 200px;
@@ -224,8 +232,13 @@
         </div>
 
         <div class="campo">
+         <label>DNI:</label>
+         <input type="text" name="dni" id="dni" maxlength="8" placeholder="Ingrese DNI" required>
+        </div>
+
+        <div class="campo">
             <label>Fecha:</label>
-            <input type="date" name="fecha" required>
+            <input type="text" name="fecha" id="fecha" required placeholder="Seleccione una fecha">
         </div>
 
         <div class="campo">
@@ -385,6 +398,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
 <script>
     $(document).ready(function() {
         $('.buscador').select2({
@@ -393,7 +409,50 @@
             width: '100%'
         });
     });
+
+    flatpickr("#fecha", {
+        locale: "es",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d/m/Y",
+        maxDate: "today",
+        allowInput: false,
+        disableMobile: true
+    });
 </script>
+<script>
+document.getElementById("dni").addEventListener("input", function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- AQUÍ VA EL MENSAJE -->
+<?php if(isset($_GET['mensaje']) && $_GET['mensaje'] == 'ok'): ?>
+<script>
+window.onload = function(){
+    Swal.fire({
+        icon: 'success',
+        title: '¡Guardado!',
+        text: 'La ecografía se registró correctamente',
+        confirmButtonColor: '#2563eb'
+    });
+}
+</script>
+<?php endif; ?>
+
+<?php if(isset($_GET['mensaje']) && $_GET['mensaje'] == 'error'): ?>
+<script>
+window.onload = function(){
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo guardar',
+        confirmButtonColor: '#dc2626'
+    });
+}
+</script>
+<?php endif; ?>
 
 </body>
 </html>

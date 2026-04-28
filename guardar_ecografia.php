@@ -2,6 +2,7 @@
 include("conexion.php");
 
 $historia_clinica = $_POST['historia_clinica'];
+$dni = $_POST['dni'];
 $fecha = $_POST['fecha'];
 $apellidos = $_POST['apellidos'];
 $nombres = $_POST['nombres'];
@@ -15,6 +16,7 @@ $diagnostico = $_POST['diagnostico'];
 
 $sql = "INSERT INTO ecografias (
     historia_clinica,
+    dni,
     fecha,
     apellidos,
     nombres,
@@ -24,9 +26,11 @@ $sql = "INSERT INTO ecografias (
     medico_turno,
     examen_solicitado,
     tipo_atencion,
-    diagnostico
+    diagnostico,
+    fecha_registro
 ) VALUES (
     '$historia_clinica',
+    '$dni',
     '$fecha',
     '$apellidos',
     '$nombres',
@@ -36,14 +40,15 @@ $sql = "INSERT INTO ecografias (
     '$medico_turno',
     '$examen_solicitado',
     '$tipo_atencion',
-    '$diagnostico'
+    '$diagnostico',
+    NOW()
 )";
 
-if ($conexion->query($sql)) {
-    echo "Ecografía registrada correctamente ✅";
-    echo "<br><a href='registrar_ecografia.php'>Registrar otra ecografía</a>";
-    echo "<br><a href='menu.php'>Volver al menú</a>";
+if ($conexion->query($sql) === TRUE) {
+    header("Location: registrar_ecografia.php?mensaje=ok");
+    exit();
 } else {
-    echo "Error al registrar: " . $conexion->error;
+   header("Location: registrar_ecografia.php?mensaje=error");
+exit();
 }
 ?>

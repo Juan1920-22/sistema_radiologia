@@ -10,7 +10,7 @@ $hoy = $conexion->query("SELECT COUNT(*) as total FROM ecografias WHERE DATE(fec
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<title>Panel Principal - Sistema de Ecografías</title>
 
 <style>
 * {
@@ -19,121 +19,198 @@ $hoy = $conexion->query("SELECT COUNT(*) as total FROM ecografias WHERE DATE(fec
 
 body {
     margin: 0;
-    font-family: Arial;
-    background: #f1f5f9;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #e0f2fe, #f8fafc);
     min-height: 100vh;
+    color: #0f172a;
+}
+
+.header {
+    width: 100%;
+    background: #ffffff;
+    padding: 18px 45px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.08);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: space-between;
+}
+
+.header h2 {
+    margin: 0;
+    color: #1e3a8a;
+    font-size: 22px;
+}
+
+.header span {
+    color: #64748b;
+    font-size: 14px;
 }
 
 .contenedor {
-    width: 95%;
-    max-width: 1200px;
-    display: flex;
-    background: linear-gradient(135deg, #0f172a, #1e3a8a, #2563eb);
-    border-radius: 25px;
+    width: 92%;
+    max-width: 1180px;
+    margin: 45px auto;
+    background: white;
+    border-radius: 26px;
+    box-shadow: 0 18px 45px rgba(15,23,42,.16);
     overflow: hidden;
-    box-shadow: 0 25px 60px rgba(0,0,0,.35);
-    margin: 30px;
+    display: grid;
+    grid-template-columns: 42% 58%;
 }
 
 .izquierda {
-    width: 50%;
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    padding: 45px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px;
 }
 
 .logo-card {
-    width: 80%;
-    max-width: 420px;
-    background: rgba(255,255,255,.12);
-    padding: 30px;
-    border-radius: 25px;
-    box-shadow: 0 20px 40px rgba(0,0,0,.35);
+    background: rgba(255,255,255,.18);
+    padding: 28px;
+    border-radius: 24px;
     text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,.18);
 }
 
 .logo-card img {
     width: 100%;
-    border-radius: 15px;
+    max-width: 330px;
+    border-radius: 18px;
+    background: white;
+    padding: 12px;
+}
+
+.logo-card p {
+    color: white;
+    font-size: 14px;
+    margin-top: 18px;
 }
 
 .derecha {
-    width: 50%;
-    padding: 40px;
-    color: white;
+    padding: 48px;
 }
 
-h1 {
-    margin-top: 0;
+.derecha h1 {
+    margin: 0;
+    color: #1e3a8a;
+    font-size: 34px;
 }
 
 .sub {
-    color: rgba(255,255,255,.8);
-    margin-bottom: 25px;
+    color: #64748b;
+    margin-top: 8px;
+    margin-bottom: 30px;
+    font-size: 16px;
 }
 
 .cards {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-bottom: 30px;
 }
 
 .card {
-    flex: 1;
-    background: rgba(255,255,255,.14);
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 22px;
+    border-radius: 18px;
 }
 
 .card h2 {
     margin: 0;
-    font-size: 30px;
+    font-size: 34px;
+    color: #2563eb;
 }
 
 .card span {
-    font-size: 13px;
-    color: rgb(255, 255, 255);
+    display: block;
+    margin-top: 5px;
+    color: #475569;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.menu {
+    display: grid;
+    gap: 14px;
 }
 
 .boton {
-    display: block;
-    text-align: center;
-    padding: 15px;
-    margin-bottom: 12px;
-    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-radius: 15px;
     color: white;
     font-weight: bold;
     text-decoration: none;
-    transition: 0.2s;
+    transition: 0.2s ease;
+    box-shadow: 0 8px 18px rgba(0,0,0,.12);
+}
+
+.boton small {
+    display: block;
+    font-weight: normal;
+    font-size: 12px;
+    opacity: .9;
+    margin-top: 3px;
+}
+
+.boton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(0,0,0,.18);
 }
 
 .azul { background: #2563eb; }
 .verde { background: #16a34a; }
-.rojo { background: #dc2626; }
+.celeste { background: #0891b2; }
 .gris { background: #475569; }
 
-.boton:hover {
-    transform: scale(1.03);
-    opacity: .9;
+.footer-info {
+    margin-top: 28px;
+    padding: 14px;
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    border-radius: 12px;
+    color: #334155;
+    font-size: 14px;
 }
 
 @media (max-width: 900px) {
-    body {
-        align-items: flex-start;
+    .header {
+        padding: 16px 22px;
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
     }
 
     .contenedor {
-        flex-direction: column;
-        margin: 20px;
+        grid-template-columns: 1fr;
+        margin: 25px auto;
     }
 
-    .izquierda, .derecha {
-        width: 100%;
+    .izquierda {
+        padding: 30px;
+    }
+
+    .derecha {
+        padding: 30px;
+    }
+
+    .derecha h1 {
+        font-size: 27px;
+        text-align: center;
+    }
+
+    .sub {
+        text-align: center;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
     }
 }
 </style>
@@ -141,35 +218,74 @@ h1 {
 </head>
 <body>
 
+<div class="header">
+    <h2>Hospital San José de Chincha</h2>
+    <span>Panel Principal del Sistema de Gestión de Ecografías</span>
+</div>
+
 <div class="contenedor">
 
     <div class="izquierda">
         <div class="logo-card">
-            <img src="img/hospital.jpg" alt="Hospital">
+            <img src="img/hospital.jpg" alt="Hospital San José de Chincha">
+            <p>Área de Diagnóstico por Imágenes</p>
         </div>
     </div>
 
     <div class="derecha">
 
-        <h1>Hospital San José de Chincha</h1>
-        <p class="sub">Sistema Web de Gestión de Ecografías</p>
+        <h1>Panel Principal</h1>
+        <p class="sub">Gestión, consulta y control de registros ecográficos</p>
 
         <div class="cards">
             <div class="card">
                 <h2><?php echo $total['total']; ?></h2>
-                <span>Total Ecografías</span>
+                <span>Total de ecografías</span>
             </div>
 
             <div class="card">
                 <h2><?php echo $hoy['total']; ?></h2>
-                <span>Hoy</span>
+                <span>Registradas hoy</span>
             </div>
         </div>
 
-        <a class="boton azul" href="registrar_ecografia.php">Registrar nueva ecografía</a>
-        <a class="boton verde" href="historial_ecografias.php">Ver historial de ecografías</a>
-        <a class="boton rojo" href="#">Paloteo</a>
-        <a class="boton gris" href="#">Mantenimiento</a>
+        <div class="menu">
+            <a class="boton azul" href="registrar_ecografia.php">
+                <div>
+                    Registrar nueva ecografía
+                    <small>Ingresar datos del paciente y examen</small>
+                </div>
+                <span>➜</span>
+            </a>
+
+            <a class="boton verde" href="historial_ecografias.php">
+                <div>
+                    Ver historial de ecografías
+                    <small>Buscar, filtrar y consultar registros</small>
+                </div>
+                <span>➜</span>
+            </a>
+
+            <a class="boton celeste" href="#">
+                <div>
+                    Paloteo
+                    <small>Control y revisión de atenciones</small>
+                </div>
+                <span>➜</span>
+            </a>
+
+            <a class="boton gris" href="#">
+                <div>
+                    Mantenimiento
+                    <small>Configuración y administración del sistema</small>
+                </div>
+                <span>➜</span>
+            </a>
+        </div>
+
+        <div class="footer-info">
+            Sistema diseñado para optimizar el registro y seguimiento de ecografías del Hospital San José de Chincha.
+        </div>
 
     </div>
 
