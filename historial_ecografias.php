@@ -56,6 +56,7 @@ if (count($where) > 0) {
 
 $sql = "SELECT * FROM ecografias $where_sql ORDER BY fecha DESC";
 $resultado = mysqli_query($conexion, $sql);
+$total_registros = $resultado->num_rows;
 ?>
 
 <!DOCTYPE html>
@@ -377,6 +378,9 @@ $resultado = mysqli_query($conexion, $sql);
     </form>
 
     <div class="tabla-contenedor">
+<div style="margin: 15px 0; font-weight: bold; color: #1e3a8a;">
+    Registros encontrados: <?php echo $total_registros; ?>
+</div>
         <table>
             <thead>
                 <tr>

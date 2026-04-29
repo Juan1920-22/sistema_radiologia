@@ -1,19 +1,21 @@
 <?php
+session_start();
 include("conexion.php");
 
 $usuario = $_POST['usuario'];
 $password = $_POST['password'];
 
-$sql = "SELECT * FROM usuarios 
-        WHERE usuario='$usuario' AND password='$password'";
-
-$resultado = $conexion->query($sql);
+$stmt = $conexion->prepare("SELECT * FROM usuarios WHERE usuario=? AND password=?");
+$stmt->bind_param("ss", $usuario, $password);
+$stmt->execute();
+$resultado = $stmt->get_result();
 
 if ($resultado->num_rows > 0) {
+    $_SESSION['usuario'] = $usuario;
     header("Location: menu.php");
     exit();
 } else {
-    echo "Usuario o contraseña incorrectos ❌";
-    echo "<br><a href='login.php'>Volver</a>";
+    header("Location: login.php?error=1");
+    exit();
 }
 ?>

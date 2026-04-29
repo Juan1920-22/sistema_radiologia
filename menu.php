@@ -1,7 +1,13 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['usuario'])) {
+    header("Location: login.php");
+    exit();
+}
+
 include("conexion.php");
 
-// CONSULTAS
 $total = $conexion->query("SELECT COUNT(*) as total FROM ecografias")->fetch_assoc();
 $hoy = $conexion->query("SELECT COUNT(*) as total FROM ecografias WHERE DATE(fecha)=CURDATE()")->fetch_assoc();
 ?>
@@ -10,12 +16,10 @@ $hoy = $conexion->query("SELECT COUNT(*) as total FROM ecografias WHERE DATE(fec
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Panel Principal - Sistema de Ecografías</title>
+<title>PANEL PRINCIPAL - SISTEMA DE ECOGRAFÍAS</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -37,8 +41,12 @@ body {
 
 .header h2 {
     margin: 0;
-    color: #1e3a8a;
-    font-size: 22px;
+    color: #1d49b1;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Times New Roman', serif;
 }
 
 .header span {
@@ -168,6 +176,11 @@ body {
 .verde { background: #16a34a; }
 .celeste { background: #0891b2; }
 .gris { background: #475569; }
+.salir-sistema { background: #991b1b; }
+
+.salir-sistema:hover {
+    background: #7f1d1d;
+}
 
 .footer-info {
     margin-top: 28px;
@@ -213,14 +226,36 @@ body {
         grid-template-columns: 1fr;
     }
 }
-</style>
 
+.salir-contenedor {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+.btn-salir {
+    display: inline-block !important;
+    background: #dc2626 !important;
+    color: white !important;
+    padding: 7px 14px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+}
+
+.btn-salir:hover {
+    background: #b91c1c !important;
+}
+</style>
 </head>
+
 <body>
 
 <div class="header">
-    <h2>Hospital San José de Chincha</h2>
-    <span>Panel Principal del Sistema de Gestión de Ecografías</span>
+    <h2>HOSPITAL SAN JOSÉ DE CHINCHA</h2>
+    <span>PANEL PRINCIPAL DEL SISTEMA DE GESTIÓN DE ECOGRAFIAS</span>
 </div>
 
 <div class="contenedor">
@@ -281,9 +316,14 @@ body {
                 </div>
                 <span>➜</span>
             </a>
-        </div>
 
-        <div class="footer-info">
+         <div class="salir-contenedor">
+    <a href="logout.php" class="btn-salir"> Salir</a>
+</div>
+
+</div> <!-- cierre de menu -->
+
+<div class="footer-info">
             Sistema diseñado para optimizar el registro y seguimiento de ecografías del Hospital San José de Chincha.
         </div>
 
