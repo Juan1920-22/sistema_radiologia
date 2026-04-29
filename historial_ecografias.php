@@ -218,6 +218,21 @@ $total_registros = $resultado->num_rows;
                 align-items: stretch;
             }
         }
+
+.btn-editar {
+    background: #f59e0b;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.btn-editar:hover {
+    background: #d97706;
+}
+
     </style>
 </head>
 
@@ -395,6 +410,7 @@ $total_registros = $resultado->num_rows;
                     <th>Tipo Atención</th>
                     <th>Examen</th>
                     <th>Diagnóstico</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
 
@@ -413,6 +429,11 @@ $total_registros = $resultado->num_rows;
                             <td><?php echo $fila['tipo_atencion']; ?></td>
                             <td><?php echo $fila['examen_solicitado']; ?></td>
                             <td><?php echo $fila['diagnostico']; ?></td>
+                            <td>
+                       <a class="btn-editar" href="editar_ecografia.php?id=<?php echo $fila['id_ecografia']; ?>">
+    Editar
+</a>
+                            </td>
                         </tr>
                     <?php } ?>
                 <?php } else { ?>
@@ -456,5 +477,18 @@ document.getElementById("btnPDF").addEventListener("click", function(){
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<?php if(isset($_GET['editado'])) { ?>
+<script>
+Swal.fire({
+    icon: 'success',
+    title: '¡Editado!',
+    text: 'El registro se actualizó correctamente',
+    showConfirmButton: false,
+    timer: 2200,
+    timerProgressBar: true
+});
+</script>
+<?php } ?>
 </body>
 </html>

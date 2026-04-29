@@ -262,14 +262,14 @@ body {
 
     <div class="izquierda">
         <div class="logo-card">
-            <img src="img/hospital.jpg" alt="Hospital San José de Chincha">
+            <img src="img/hospital.3.jpg" alt="Hospital San José de Chincha">
             <p>Área de Diagnóstico por Imágenes</p>
         </div>
     </div>
 
     <div class="derecha">
 
-        <h1>Panel Principal</h1>
+        <h1>PANEL PRINCIPAL</h1>
         <p class="sub">Gestión, consulta y control de registros ecográficos</p>
 
         <div class="cards">
