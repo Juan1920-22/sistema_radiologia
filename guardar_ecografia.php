@@ -13,6 +13,9 @@ $medico_turno = $_POST['medico_turno'];
 $examen_solicitado = $_POST['examen_solicitado'];
 $tipo_atencion = $_POST['tipo_atencion'];
 $diagnostico = $_POST['diagnostico'];
+$monto = $_POST['monto'] ?? null;
+$numero_boleta = $_POST['numero_boleta'] ?? null;
+$convenio = $_POST['convenio'] ?? null;
 
 $sql = "INSERT INTO ecografias (
     historia_clinica,
@@ -27,6 +30,9 @@ $sql = "INSERT INTO ecografias (
     examen_solicitado,
     tipo_atencion,
     diagnostico,
+    monto,
+    numero_boleta,
+    convenio,
     fecha_registro
 ) VALUES (
     '$historia_clinica',
@@ -41,6 +47,9 @@ $sql = "INSERT INTO ecografias (
     '$examen_solicitado',
     '$tipo_atencion',
     '$diagnostico',
+    '$monto',
+    '$numero_boleta',
+    '$convenio',
     NOW()
 )";
 

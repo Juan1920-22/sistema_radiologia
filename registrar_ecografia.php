@@ -1,5 +1,10 @@
-<?php include("conexion.php"); ?>
+<?php
+include("conexion.php");
 
+$condiciones = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Condición de pago' AND estado=1 ORDER BY nombre ASC");
+$servicios = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Servicio' AND estado=1 ORDER BY nombre ASC");
+$examenes = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Examen' AND estado=1 ORDER BY nombre ASC");
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -261,21 +266,57 @@
         </div>
 
         <div class="campo">
-            <label>Condición:</label>
-            <select class="buscador" name="condicion" required>
-                <option value="">Seleccione o escriba...</option>
-                <option value="Asegurado">Asegurado</option>
-                <option value="No asegurado">No asegurado</option>
-                <option value="Referido">Referido</option>
-                <option value="Particular">Particular</option>
-            </select>
-        </div>
+    <label>Condición:</label>
+    <select class="buscador" name="condicion" required>
+        <option value="">Seleccione o escriba...</option>
 
+        <option value="Asegurado">Asegurado</option>
+        <option value="No asegurado">No asegurado</option>
+        <option value="Referido">Referido</option>
+        <option value="Particular">Particular</option>
+        <option value="SIS">SIS</option>
+        <option value="Essalud">Essalud</option>
+        <option value="Convenios">Convenios</option>
+        <option value="Contado">Contado</option>
+        <option value="Exonerado Parcial">Exonerado Parcial</option>
+        <option value="Exonerado Total">Exonerado Total</option>
+        <option value="Ley de emergencia">Ley de emergencia</option>
+        <option value="Pago parcial">Pago parcial</option>
+        <option value="Credito">Credito</option>
+
+        <?php while($c = $condiciones->fetch_assoc()) { ?>
+            <option value="<?php echo $c['nombre']; ?>">
+                <?php echo $c['nombre']; ?>
+            </option>
+        <?php } ?>
+    </select>
+</div>
+
+<!-- 👇 CONVENIO -->
+<div class="campo" id="campo_convenio" style="display:none;">
+    <label>Convenio:</label>
+    <select name="convenio" id="convenio">
+        <option value="">Seleccione convenio</option>
+        <option value="Policía">Policía</option>
+        <option value="Municipalidad">Municipalidad</option>
+        <option value="Empresa privada">Empresa privada</option>
+    </select>
+</div>
+
+<div class="campo" id="campo_monto" style="display:none;">
+    <label>Monto:</label>
+    <input type="number" name="monto" id="monto" step="0.01" placeholder="Ingrese monto">
+</div>
+
+<div class="campo" id="campo_boleta" style="display:none;">
+    <label>N° Boleta:</label>
+    <input type="text" name="numero_boleta" id="numero_boleta" placeholder="Ingrese número de boleta">
+</div>
         <div class="campo">
             <label>Servicio solicitante:</label>
             <select class="buscador" name="servicio_solicitante" required>
-                <option value="">Seleccione o escriba...</option>
-                <option>Cardiología</option>
+    <option value="">Seleccione o escriba...</option>
+    <option>Cardiología</option>
                 <option>Cirugía</option>
                 <option>Consultorio externo</option>
                 <option>COVID-19</option>
@@ -304,7 +345,13 @@
                 <option>UVI</option>
                 <option>UVICLIN</option>
                 <option>Vésico prostático</option>
-            </select>
+
+    <?php while($s = $servicios->fetch_assoc()) { ?>
+        <option value="<?php echo $s['nombre']; ?>">
+            <?php echo $s['nombre']; ?>
+        </option>
+    <?php } ?>
+</select>
         </div>
 
         <div class="campo">
@@ -338,7 +385,7 @@
         <div class="campo completo">
             <label>Examen solicitado:</label>
             <select class="buscador" name="examen_solicitado" required>
-                <option value="">Seleccione o escriba...</option>
+    <option value="">Seleccione o escriba...</option>
                 <option>Abdominal superior</option>
                 <option>Retroperitoneal</option>
                 <option>Pélvica</option>
@@ -379,7 +426,14 @@
                 <option>Doppler venoso M. SUP. BILATERAL</option>
                 <option>Doppler venoso M. INF</option>
                 <option>Doppler venoso M. INF. BILATERAL</option>
-            </select>
+
+    <?php while($e = $examenes->fetch_assoc()) { ?>
+        <option value="<?php echo $e['nombre']; ?>">
+            <?php echo $e['nombre']; ?>
+        </option>
+    <?php } ?>
+</select>
+
         </div>
 
         <div class="campo completo">
@@ -454,5 +508,52 @@ window.onload = function(){
 </script>
 <?php endif; ?>
 
+<script>
+function controlarCamposPago() {
+    let condicion = $('[name="condicion"]').val();
+
+    let campoMonto = document.getElementById("campo_monto");
+    let campoBoleta = document.getElementById("campo_boleta");
+    let campoConvenio = document.getElementById("campo_convenio");
+
+    let monto = document.getElementById("monto");
+    let boleta = document.getElementById("numero_boleta");
+
+    campoMonto.style.display = "none";
+    campoBoleta.style.display = "none";
+    campoConvenio.style.display = "none";
+
+    monto.required = false;
+    boleta.required = false;
+
+    if (condicion === "Particular") {
+        campoMonto.style.display = "flex";
+        monto.required = true;
+    }
+
+    if (
+        condicion === "Contado" ||
+        condicion === "Exonerado Parcial" ||
+        condicion === "Pago parcial"
+    ) {
+        campoMonto.style.display = "flex";
+        campoBoleta.style.display = "flex";
+        monto.required = true;
+        boleta.required = true;
+    }
+
+    if (condicion === "Convenios") {
+        campoConvenio.style.display = "flex";
+    }
+}
+
+$(document).ready(function() {
+    $('[name="condicion"]').on('change', function() {
+        controlarCamposPago();
+    });
+
+    controlarCamposPago();
+});
+</script>
 </body>
 </html>

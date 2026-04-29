@@ -255,7 +255,7 @@ body {
 
 <div class="header">
     <h2>HOSPITAL SAN JOSÉ DE CHINCHA</h2>
-    <span>PANEL PRINCIPAL DEL SISTEMA DE GESTIÓN DE ECOGRAFIAS</span>
+    <span>SISTEMA DE GESTIÓN DE ECOGRAFIAS</span>
 </div>
 
 <div class="contenedor">
@@ -263,14 +263,14 @@ body {
     <div class="izquierda">
         <div class="logo-card">
             <img src="img/hospital.3.jpg" alt="Hospital San José de Chincha">
-            <p>Área de Diagnóstico por Imágenes</p>
+            <p>ÁREA DE DIAGNOSTICO POR IMAGEN</p>
         </div>
     </div>
 
     <div class="derecha">
 
         <h1>PANEL PRINCIPAL</h1>
-        <p class="sub">Gestión, consulta y control de registros ecográficos</p>
+        <p class="sub">GESTIÓN, CONSULTA Y CONTROL DE REGISTROS GEOGRÁFICOS</p>
 
         <div class="cards">
             <div class="card">
@@ -296,7 +296,7 @@ body {
             <a class="boton verde" href="historial_ecografias.php">
                 <div>
                     Ver historial de ecografías
-                    <small>Buscar, filtrar y consultar registros</small>
+                    <small>Buscar, filtrar, editar y consultar registros</small>
                 </div>
                 <span>➜</span>
             </a>
@@ -309,7 +309,7 @@ body {
                 <span>➜</span>
             </a>
 
-            <a class="boton gris" href="#">
+            <a class="boton gris" href="mantenimiento.php">
                 <div>
                     Mantenimiento
                     <small>Configuración y administración del sistema</small>

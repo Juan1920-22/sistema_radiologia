@@ -1,5 +1,8 @@
 <?php
 include("conexion.php");
+$condiciones = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Condición de pago' AND estado=1 ORDER BY nombre ASC");
+$servicios = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Servicio' AND estado=1 ORDER BY nombre ASC");
+$examenes = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Examen' AND estado=1 ORDER BY nombre ASC");
 
 $id = $_GET['id'];
 
@@ -136,19 +139,25 @@ textarea {
 
     <div class="campo">
         <label>Condición:</label>
-        <select name="condicion">
-            <option value="Asegurado" <?php if($fila['condicion']=="Asegurado") echo "selected"; ?>>Asegurado</option>
-            <option value="No asegurado" <?php if($fila['condicion']=="No asegurado") echo "selected"; ?>>No asegurado</option>
-            <option value="Referido" <?php if($fila['condicion']=="Referido") echo "selected"; ?>>Referido</option>
-            <option value="Particular" <?php if($fila['condicion']=="Particular") echo "selected"; ?>>Particular</option>
-        </select>
+        <select name="condicion" required>
+    <option value="Asegurado" <?php if($fila['condicion']=="Asegurado") echo "selected"; ?>>Asegurado</option>
+    <option value="No asegurado" <?php if($fila['condicion']=="No asegurado") echo "selected"; ?>>No asegurado</option>
+    <option value="Referido" <?php if($fila['condicion']=="Referido") echo "selected"; ?>>Referido</option>
+    <option value="Particular" <?php if($fila['condicion']=="Particular") echo "selected"; ?>>Particular</option>
+
+    <?php while($c = $condiciones->fetch_assoc()) { ?>
+        <option value="<?php echo $c['nombre']; ?>" 
+            <?php if($fila['condicion'] == $c['nombre']) echo "selected"; ?>>
+            <?php echo $c['nombre']; ?>
+        </option>
+    <?php } ?>
+</select>
     </div>
 
     <div class="campo">
         <label>Servicio solicitante:</label>
-<select name="servicio_solicitante">
-
-<option value="">Seleccione</option>
+<select name="servicio_solicitante" required>
+    <option>Seleccione</option>
 
 <option <?php if($fila['servicio_solicitante']=="Cardiología") echo "selected"; ?>>Cardiología</option>
 <option <?php if($fila['servicio_solicitante']=="Cirugía") echo "selected"; ?>>Cirugía</option>
@@ -180,6 +189,12 @@ textarea {
 <option <?php if($fila['servicio_solicitante']=="UVICLIN") echo "selected"; ?>>UVICLIN</option>
 <option <?php if($fila['servicio_solicitante']=="Vésico prostático") echo "selected"; ?>>Vésico prostático</option>
 
+<?php while($s = $servicios->fetch_assoc()) { ?>
+        <option value="<?php echo $s['nombre']; ?>" 
+        <?php if($fila['servicio_solicitante'] == $s['nombre']) echo "selected"; ?>>
+        <?php echo $s['nombre']; ?>
+        </option>
+    <?php } ?>
 </select>
     </div>
 
@@ -214,8 +229,8 @@ textarea {
     </div>
 
     <div class="campo">
-        <label>Examen solicitado:</label>
-<select name="examen_solicitado">
+        <select name="examen_solicitado" required>
+    <option>Seleccione</option>
 
 <option value="">Seleccione</option>
 
@@ -260,6 +275,12 @@ textarea {
 <option <?php if($fila['examen_solicitado']=="Doppler venoso M. INF") echo "selected"; ?>>Doppler venoso M. INF</option>
 <option <?php if($fila['examen_solicitado']=="Doppler venoso M. INF. BILATERAL") echo "selected"; ?>>Doppler venoso M. INF. BILATERAL</option>
 
+ <?php while($e = $examenes->fetch_assoc()) { ?>
+        <option value="<?php echo $e['nombre']; ?>" 
+        <?php if($fila['examen_solicitado'] == $e['nombre']) echo "selected"; ?>>
+        <?php echo $e['nombre']; ?>
+        </option>
+    <?php } ?>
 </select>
     </div>
 

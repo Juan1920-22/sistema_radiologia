@@ -180,11 +180,18 @@ $total_registros = $resultado->num_rows;
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            min-width: 1100px;
-        }
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 100%;
+    table-layout: fixed;
+}
+
+th, td {
+    padding: 8px;
+    word-wrap: break-word;
+    text-align: center;
+}
 
         th {
             background: #1e3a8a;
@@ -410,7 +417,11 @@ $total_registros = $resultado->num_rows;
                     <th>Tipo Atención</th>
                     <th>Examen</th>
                     <th>Diagnóstico</th>
+                    <th>Monto</th>
+                    <th>Boleta</th>
+                    <th>Convenio</th>
                     <th>Acción</th>
+                
                 </tr>
             </thead>
 
@@ -429,16 +440,16 @@ $total_registros = $resultado->num_rows;
                             <td><?php echo $fila['tipo_atencion']; ?></td>
                             <td><?php echo $fila['examen_solicitado']; ?></td>
                             <td><?php echo $fila['diagnostico']; ?></td>
-                            <td>
-                       <a class="btn-editar" href="editar_ecografia.php?id=<?php echo $fila['id_ecografia']; ?>">
-    Editar
-</a>
-                            </td>
+                            <td><?php echo !empty($fila['monto']) ? 'S/ ' . number_format($fila['monto'], 2) : '-'; ?></td>
+                            <td><?php echo !empty($fila['numero_boleta']) ? $fila['numero_boleta'] : '-'; ?></td>
+                            <td><?php echo !empty($fila['convenio']) ? $fila['convenio'] : '-'; ?></td>
+                            <td><a class="btn-editar" href="editar_ecografia.php?id=<?php echo $fila['id_ecografia']; ?>">
+        Editar </a></td>
                         </tr>
                     <?php } ?>
                 <?php } else { ?>
                     <tr>
-                        <td colspan="10" class="vacio">No se encontraron ecografías con esos filtros.</td>
+                        <td colspan="16" class="vacio">No se encontraron ecografías con esos filtros.</td>
                     </tr>
                 <?php } ?>
             </tbody>
