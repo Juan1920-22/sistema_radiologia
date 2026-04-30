@@ -67,13 +67,12 @@ body {
 }
 
 .izquierda {
-    background: linear-gradient(135deg, #1e3a8a, #2563eb);
-    padding: 45px;
+    background: linear-gradient(135deg, #dbeafe, #93c5fd, #2563eb);
+    padding: 35px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 .logo-card {
     background: rgba(255,255,255,.18);
     padding: 28px;
@@ -84,7 +83,7 @@ body {
 
 .logo-card img {
     width: 100%;
-    max-width: 330px;
+    max-width: 350px;
     border-radius: 18px;
     background: white;
     padding: 12px;
@@ -150,13 +149,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
-    border-radius: 15px;
+    padding: 18px 22px;
+    border-radius: 18px;
     color: white;
     font-weight: bold;
     text-decoration: none;
-    transition: 0.2s ease;
-    box-shadow: 0 8px 18px rgba(0,0,0,.12);
+    transition: 0.25s ease;
+    box-shadow: 0 10px 22px rgba(15,23,42,.16);
+}
+
+.boton:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px rgba(15,23,42,.22);
 }
 
 .boton small {
@@ -248,6 +252,32 @@ body {
 .btn-salir:hover {
     background: #b91c1c !important;
 }
+.bienvenida {
+    background: #eff6ff;
+    border-left: 5px solid #2563eb;
+    padding: 13px 16px;
+    border-radius: 12px;
+    color: #1e3a8a;
+    font-size: 15px;
+    margin-bottom: 25px;
+}
+.fecha-actual {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+.franja-inferior {
+    width: 92%;
+    max-width: 1180px;
+    margin: -25px auto 30px;
+    background: #1e3a8a;
+    color: white;
+    text-align: center;
+    padding: 14px;
+    border-radius: 0 0 18px 18px;
+    font-size: 14px;
+    letter-spacing: .5px;
+}
 </style>
 </head>
 
@@ -270,8 +300,11 @@ body {
     <div class="derecha">
 
         <h1>PANEL PRINCIPAL</h1>
-        <p class="sub">GESTIÓN, CONSULTA Y CONTROL DE REGISTROS GEOGRÁFICOS</p>
-
+        <p class="sub"> </p>
+    <div class="bienvenida">
+    Bienvenido al sistema. Gestione los registros ecográficos de manera rápida, segura y ordenada.
+    </div>
+    <div class="fecha-actual" id="fechaActual"></div>
         <div class="cards">
             <div class="card">
                 <h2><?php echo $total['total']; ?></h2>
@@ -330,6 +363,13 @@ body {
     </div>
 
 </div>
-
+<script>
+const fecha = new Date();
+const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById("fechaActual").innerText = fecha.toLocaleDateString('es-PE', opciones);
+</script>
+<div class="franja-inferior">
+    Hospital San José de Chincha – Área de Diagnóstico por Imágenes
+</div>
 </body>
 </html>

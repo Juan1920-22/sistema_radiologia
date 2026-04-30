@@ -57,6 +57,11 @@ if (count($where) > 0) {
 $sql = "SELECT * FROM ecografias $where_sql ORDER BY fecha DESC";
 $resultado = mysqli_query($conexion, $sql);
 $total_registros = $resultado->num_rows;
+$sql_total_monto = "SELECT SUM(monto) AS total_monto FROM ecografias $where_sql";
+$resultado_monto = mysqli_query($conexion, $sql_total_monto);
+$fila_monto = mysqli_fetch_assoc($resultado_monto);
+
+$total_monto = $fila_monto['total_monto'] ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -142,10 +147,11 @@ $total_registros = $resultado->num_rows;
             box-shadow: 0 0 0 3px rgba(37,99,235,.15);
         }
 
-        .acciones {
+        .acciones-tabla {
             display: flex;
-            align-items: end;
-            gap: 10px;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
         }
 
         .btn {
@@ -176,33 +182,38 @@ $total_registros = $resultado->num_rows;
            background: #d97706;
         }
         .tabla-contenedor {
-            overflow-x: auto;
-        }
+           overflow-x: auto;
+           border-radius: 14px;
+           border: 1px solid #e2e8f0;
+           }
 
         table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    min-width: 100%;
-    table-layout: fixed;
-}
+           width: 100%;
+           border-collapse: collapse;
+           font-size: 13px;
+           min-width: 1250px;
+        }
 
-th, td {
-    padding: 8px;
-    word-wrap: break-word;
-    text-align: center;
-}
+           th, td {
+           padding: 8px;
+           word-wrap: break-word;
+           text-align: center;
+        }
 
         th {
-            background: #1e3a8a;
-            color: white;
-            padding: 12px;
-            text-align: left;
+           background: #1e3a8a;
+           color: white;
+           padding: 13px 10px;
+           text-align: center;
+           vertical-align: middle;
         }
 
         td {
-            padding: 11px;
-            border-bottom: 1px solid #e2e8f0;
+           padding: 12px 10px;
+           border-bottom: 1px solid #e2e8f0;
+           text-align: center;
+           vertical-align: middle;
+           word-break: normal;
         }
 
         tr:hover {
@@ -220,26 +231,49 @@ th, td {
                 grid-template-columns: 1fr;
             }
 
-            .acciones {
+        .acciones {
                 flex-direction: column;
                 align-items: stretch;
             }
         }
 
-.btn-editar {
-    background: #f59e0b;
-    color: white;
-    padding: 6px 10px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: bold;
+        .btn-editar,
+        .btn-eliminar {
+                width: 80px;
+                text-align: center;
+                padding: 7px 0;
+                border-radius: 8px;
+                color: white !important;
+                text-decoration: none !important;
+                font-size: 12px;
+                font-weight: bold;
+                display: inline-block;
+        }
+        .btn-editar {
+                background: #f59e0b;
+        }
+        .btn-eliminar {
+                background: #dc2626;
+        }
+        .btn-editar:hover {
+                background: #d97706;
+        }
+        .btn-eliminar:hover {
+                background: #b91c1c;
+        }
+        td:nth-child(4),
+        td:nth-child(8),
+        td:nth-child(9),
+        td:nth-child(10),
+        td:nth-child(11) {
+         max-width: 130px;
+         white-space: normal;
+        }
+        .filtros-botones {
+           display: flex;
+           align-items: end;
+        gap: 10px;
 }
-
-.btn-editar:hover {
-    background: #d97706;
-}
-
     </style>
 </head>
 
@@ -391,7 +425,7 @@ th, td {
             </select>
         </div>
 
-        <div class="acciones">
+        <div class="acciones filtros-botones">
             <button type="button" id="btnPDF" class="btn export">Descargar PDF</button>
             <button type="submit" class="btn buscar">Buscar</button>
             <a href="historial_ecografias.php" class="btn limpiar">Limpiar</a>
@@ -401,7 +435,9 @@ th, td {
 
     <div class="tabla-contenedor">
 <div style="margin: 15px 0; font-weight: bold; color: #1e3a8a;">
-    Registros encontrados: <?php echo $total_registros; ?>
+    Registros encontrados: <?php echo $total_registros; ?> 
+&nbsp;&nbsp; | &nbsp;&nbsp;
+Monto total: S/ <?php echo number_format($total_monto, 2); ?>
 </div>
         <table>
             <thead>
@@ -440,15 +476,26 @@ th, td {
                             <td><?php echo $fila['tipo_atencion']; ?></td>
                             <td><?php echo $fila['examen_solicitado']; ?></td>
                             <td><?php echo $fila['diagnostico']; ?></td>
-                            <td><?php echo !empty($fila['monto']) ? 'S/ ' . number_format($fila['monto'], 2) : '-'; ?></td>
-                            <td><?php echo !empty($fila['numero_boleta']) ? $fila['numero_boleta'] : '-'; ?></td>
-                            <td><?php echo !empty($fila['convenio']) ? $fila['convenio'] : '-'; ?></td>
-                            <td><a class="btn-editar" href="editar_ecografia.php?id=<?php echo $fila['id_ecografia']; ?>">
-        Editar </a></td>
+                            <td><?php 
+                            if($fila['monto'] == 0 || $fila['monto'] == '0.00'){
+                            echo "";
+                            } else {
+                            echo "S/ " . number_format($fila['monto'], 2);} ?> </td>
+                            <td><?php echo !empty($fila['numero_boleta']) ? $fila['numero_boleta'] : ''; ?></td>
+                            <td><?php echo !empty($fila['convenio']) ? $fila['convenio'] : ''; ?></td>
+                            <td>
+                            <div class="acciones-tabla">
+                            <a class="btn-editar" href="editar_ecografia.php?id=<?php echo $fila['id_ecografia']; ?>">
+                            Editar </a>
+                            <a class="btn-eliminar" href="eliminar_ecografia.php?id=<?php echo $fila['id_ecografia']; ?>"
+                            onclick="return confirmarEliminar();">
+                            Eliminar </a>
+                            </div>
+</td>
                         </tr>
-                    <?php } ?>
-                <?php } else { ?>
-                    <tr>
+                        <?php } ?>
+                        <?php } else { ?>
+                        <tr>
                         <td colspan="16" class="vacio">No se encontraron ecografías con esos filtros.</td>
                     </tr>
                 <?php } ?>
@@ -457,7 +504,8 @@ th, td {
     </div>
 
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script>
     const hoy = new Date();
     const yyyy = hoy.getFullYear();
@@ -468,20 +516,74 @@ th, td {
     document.getElementById("fecha_inicio").setAttribute("max", fechaActual);
     document.getElementById("fecha_final").setAttribute("max", fechaActual);
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
 <script>
 document.getElementById("btnPDF").addEventListener("click", function(){
 
     const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l','pt','a4');
 
-    var doc = new jsPDF('l','pt','a4');
+    doc.setFontSize(16);
+    doc.text("Historial de Ecografías", 40, 35);
 
-    doc.text("Historial de Ecografías", 40, 40);
+    const filas = [];
 
-    doc.autoTable({
-        html: 'table',  // usa tu tabla sin modificar nada
-        startY: 60
+    document.querySelectorAll("table tbody tr").forEach(row => {
+        const c = row.querySelectorAll("td");
+
+        if (c.length > 0) {
+            filas.push([
+                c[0].innerText,
+                c[1].innerText,
+                c[2].innerText,
+                c[3].innerText,
+                c[5].innerText,
+                c[6].innerText,
+                c[7].innerText,
+                c[9].innerText,
+                c[10].innerText,
+                c[11].innerText,
+                c[12].innerText === '-' ? '' : c[12].innerText,
+                c[13].innerText === '-' ? '' : c[13].innerText
+            ]);
+        }
     });
+let totalMonto = 0;
 
+document.querySelectorAll("table tbody tr").forEach(row => {
+    const c = row.querySelectorAll("td");
+
+    if (c.length > 0) {
+
+        let montoTexto = c[11].innerText
+    .replace('S/', '')
+    .replace(/,/g, '')
+    .trim();
+
+        if (montoTexto !== '' && montoTexto !== '-') {
+            totalMonto += parseFloat(montoTexto);
+        }
+    }
+});
+    doc.autoTable({
+        head: [[
+            "H.C", "DNI", "Fecha", "Paciente", "Condición",
+            "Servicio", "Médico", "Examen", "Diagnóstico", "Monto", "Boleta", "Convenio"
+        ]],
+        body: filas,
+        startY: 55,
+        theme: 'grid',
+        styles: {
+            fontSize: 8,
+            cellPadding: 4,
+            overflow: 'linebreak',
+            valign: 'middle'
+        }
+    });
+    doc.setFontSize(12);
+    doc.text("TOTAL GENERAL: S/ " + totalMonto.toFixed(2), 40, doc.lastAutoTable.finalY + 25);
     doc.save("historial_ecografias.pdf");
 
 });
@@ -491,7 +593,7 @@ document.getElementById("btnPDF").addEventListener("click", function(){
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php if(isset($_GET['editado'])) { ?>
 <script>
-Swal.fire({
+    Swal.fire({
     icon: 'success',
     title: '¡Editado!',
     text: 'El registro se actualizó correctamente',
@@ -501,5 +603,21 @@ Swal.fire({
 });
 </script>
 <?php } ?>
+<?php if(isset($_GET['eliminado'])) { ?>
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Eliminado',
+    text: 'El registro fue eliminado correctamente',
+    showConfirmButton: false,
+    timer: 2000
+});
+</script>
+<?php } ?>
+<script>
+    function confirmarEliminar() {
+    return confirm("⚠️ ¿Seguro que deseas eliminar este registro?");
+}
+</script>
 </body>
 </html>

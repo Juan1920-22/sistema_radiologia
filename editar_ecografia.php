@@ -140,10 +140,20 @@ textarea {
     <div class="campo">
         <label>Condición:</label>
         <select name="condicion" required>
-    <option value="Asegurado" <?php if($fila['condicion']=="Asegurado") echo "selected"; ?>>Asegurado</option>
-    <option value="No asegurado" <?php if($fila['condicion']=="No asegurado") echo "selected"; ?>>No asegurado</option>
-    <option value="Referido" <?php if($fila['condicion']=="Referido") echo "selected"; ?>>Referido</option>
-    <option value="Particular" <?php if($fila['condicion']=="Particular") echo "selected"; ?>>Particular</option>
+            <option <?php if($fila['condicion']=="Asegurado") echo "selected"; ?>>Asegurado</option>
+            <option <?php if($fila['condicion']=="No asegurado") echo "selected"; ?>>No asegurado</option>
+            <option <?php if($fila['condicion']=="Referido") echo "selected"; ?>>Referido</option>
+            <option <?php if($fila['condicion']=="Particular") echo "selected"; ?>>Particular</option>
+            <option <?php if($fila['condicion']=="SIS") echo "selected"; ?>>SIS</option>
+            <option <?php if($fila['condicion']=="Essalud") echo "selected"; ?>>Essalud</option>
+            <option <?php if($fila['condicion']=="Convenios") echo "selected"; ?>>Convenios</option>
+            <option <?php if($fila['condicion']=="Contado") echo "selected"; ?>>Contado</option>
+            <option <?php if($fila['condicion']=="Exonerado Parcial") echo "selected"; ?>>Exonerado Parcial</option>
+            <option <?php if($fila['condicion']=="Exonerado Total") echo "selected"; ?>>Exonerado Total</option>
+            <option <?php if($fila['condicion']=="Ley de emergencia") echo "selected"; ?>>Ley de emergencia</option>
+            <option <?php if($fila['condicion']=="Pago parcial") echo "selected"; ?>>Pago parcial</option>
+            <option <?php if($fila['condicion']=="Credito") echo "selected"; ?>>Credito</option>
+
 
     <?php while($c = $condiciones->fetch_assoc()) { ?>
         <option value="<?php echo $c['nombre']; ?>" 
@@ -187,23 +197,18 @@ textarea {
 <option <?php if($fila['servicio_solicitante']=="Urología") echo "selected"; ?>>Urología</option>
 <option <?php if($fila['servicio_solicitante']=="UVI") echo "selected"; ?>>UVI</option>
 <option <?php if($fila['servicio_solicitante']=="UVICLIN") echo "selected"; ?>>UVICLIN</option>
-<option <?php if($fila['servicio_solicitante']=="Vésico prostático") echo "selected"; ?>>Vésico prostático</option>
-
-<?php while($s = $servicios->fetch_assoc()) { ?>
-        <option value="<?php echo $s['nombre']; ?>" 
-        <?php if($fila['servicio_solicitante'] == $s['nombre']) echo "selected"; ?>>
+<option <?php if($fila['servicio_solicitante']=="Vésico prostático") echo "selected"; ?>>Vésico prostático</option> <?php while($s = $servicios->fetch_assoc()) { ?>
+<option value="<?php echo $s['nombre']; ?>" <?php if($fila['servicio_solicitante'] == $s['nombre']) echo "selected"; ?>>
         <?php echo $s['nombre']; ?>
         </option>
     <?php } ?>
 </select>
     </div>
 
-    <div class="campo">
-        <label>Médico turno:</label>
+<div class="campo">
+<label>Médico turno:</label>
 <select name="medico_turno">
-
 <option value="">Seleccione</option>
-
 <option <?php if($fila['medico_turno']=="BETTY CABRERA BENAVIDES") echo "selected"; ?>>BETTY CABRERA BENAVIDES</option>
 <option <?php if($fila['medico_turno']=="ELIEL MARAZA AQUINO") echo "selected"; ?>>ELIEL MARAZA AQUINO</option>
 <option <?php if($fila['medico_turno']=="FERNANDO DANIGNO AVALOS") echo "selected"; ?>>FERNANDO DANIGNO AVALOS</option>
@@ -228,7 +233,8 @@ textarea {
         </select>
     </div>
 
-    <div class="campo">
+<div class="campo">
+    <label>Examen solicitado:</label>
         <select name="examen_solicitado" required>
     <option>Seleccione</option>
 
@@ -281,14 +287,30 @@ textarea {
         <?php echo $e['nombre']; ?>
         </option>
     <?php } ?>
+
 </select>
     </div>
 
     <div class="campo">
         <label>Diagnóstico:</label>
-        <textarea name="diagnostico" rows="3"><?php echo $fila['diagnostico']; ?></textarea>
+        <textarea name="diagnostico" rows="3"><?php echo $fila['diagnostico']; ?></textarea> 
     </div>
 
+</div>
+<div class="campo">
+    <label>Monto:</label>
+    <input type="number" step="0.01" name="monto" 
+value="<?php echo ($fila['monto'] == 0) ? '' : $fila['monto']; ?>">
+</div>
+
+<div class="campo">
+    <label>Número de boleta:</label>
+    <input type="text" name="numero_boleta" value="<?php echo $fila['numero_boleta']; ?>">
+</div>
+
+<div class="campo" id="campoConvenio" style="display:none;">
+    <label>Convenio:</label>
+    <input type="text" name="convenio" value="<?php echo $fila['convenio']; ?>">
 </div>
 
 <div class="acciones">
@@ -299,6 +321,39 @@ textarea {
 </form>
 
 </div>
+<script>
+function validarConvenio() {
+    let condicion = document.querySelector("select[name='condicion']").value;
+    let campo = document.getElementById("campoConvenio");
 
+    if (condicion === "Convenio" || condicion === "Asegurado") {
+        campo.style.display = "block";
+    } else {
+        campo.style.display = "none";
+    }
+}
+
+// Ejecutar al cargar
+validarConvenio();
+
+// Ejecutar cuando cambie
+document.querySelector("select[name='condicion']").addEventListener("change", validarConvenio);
+</script>
+<script>
+function mostrarConvenio() {
+    const condicion = document.querySelector("select[name='condicion']").value;
+    const campoConvenio = document.getElementById("campoConvenio");
+
+    if (condicion === "Convenios") {
+        campoConvenio.style.display = "block";
+    } else {
+        campoConvenio.style.display = "none";
+    }
+}
+
+mostrarConvenio();
+
+document.querySelector("select[name='condicion']").addEventListener("change", mostrarConvenio);
+</script>
 </body>
 </html>
