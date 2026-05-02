@@ -174,12 +174,12 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
             background: #16a34a;
         }
         .export {
-            background: #f59e0b;
+            background: #f50b0b;
             color: white;
         }
 
         .export:hover {
-           background: #d97706;
+           background: #d90606;
         }
         .tabla-contenedor {
            overflow-x: auto;
