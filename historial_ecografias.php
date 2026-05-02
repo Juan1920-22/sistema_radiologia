@@ -72,11 +72,13 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
 
     <style>
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f1f5f9;
-            color: #1e293b;
-        }
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #172b4d 0%, #172b4d 28%, #172b4d 100%);
+    color: #0f172a;
+    position: relative;
+    }
 
         .contenedor {
             max-width: 1300px;
@@ -155,16 +157,27 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
         }
 
         .btn {
-            border: none;
-            padding: 13px 22px;
-            border-radius: 12px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            font-size: 14px;
-        }
+    border: none;
+    height: 48px;
+    min-width: 115px;
+    padding: 0 20px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    font-size: 14px;
+    transition: .25s;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    white-space: nowrap;
+    line-height: 1;
+}
+
 
         .buscar {
             background: #2563eb;
@@ -174,12 +187,12 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
             background: #16a34a;
         }
         .export {
-            background: #f50b0b;
-            color: white;
-        }
+    min-width: 135px;
+    background: #dc2626;
+}
 
         .export:hover {
-           background: #d90606;
+           background:  #d90606;
         }
         .tabla-contenedor {
            overflow-x: auto;
@@ -270,9 +283,28 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
          white-space: normal;
         }
         .filtros-botones {
-           display: flex;
-           align-items: end;
-        gap: 10px;
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-top: 4px;
+}
+/* FRANJA AZUL SUPERIOR EN LA TARJETA DEL HISTORIAL */
+.contenedor {
+    position: relative;
+    overflow: hidden;
+    padding-top: 48px;
+}
+
+.contenedor::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: px;
+    background: #172b4d;
 }
     </style>
 </head>

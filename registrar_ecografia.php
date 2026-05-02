@@ -212,15 +212,405 @@ $examenes = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Exame
                 flex-direction: column;
             }
         }
+        /* ===== ESTILO GENERAL IGUAL AL DASHBOARD ===== */
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    background: url('img/fondo_dashboard.jpg') center center / cover no-repeat fixed;
+    color: #0f172a;
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(241, 245, 249, 0.78);
+    z-index: -1;
+}
+
+/* ===== BARRA SUPERIOR ===== */
+
+.topbar {
+    width: 100%;
+    background: #172b4d;
+    color: white;
+    padding: 20px 42px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    box-shadow: 0 4px 18px rgba(0,0,0,.18);
+}
+
+.logo-hospital {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1.2px;
+    font-family: 'Times New Roman', serif;
+    text-transform: uppercase;
+}
+
+.menu-superior {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.menu-superior a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+    transition: .25s;
+}
+
+.menu-superior a:hover {
+    color: #bfdbfe;
+}
+
+.btn-salir-top {
+    background: #dc2626;
+    padding: 10px 16px;
+    border-radius: 10px;
+}
+
+.btn-salir-top:hover {
+    background: #b91c1c;
+    color: white !important;
+}
+
+/* ===== ENCABEZADO DE REGISTRO ===== */
+
+.page-header {
+    height: 330px;
+    background:
+        linear-gradient(90deg, rgba(15,23,42,.62), rgba(15,23,42,.30)),
+        url('img/hospital.1.jpg') center center / cover no-repeat;
+    display: flex;
+    align-items: center;
+    padding: 0 7%;
+    color: white;
+    box-shadow: 0 8px 24px rgba(15,23,42,.18);
+}
+
+.page-header span {
+    display: inline-block;
+    background: rgba(255,255,255,.18);
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    backdrop-filter: blur(4px);
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 42px;
+    font-weight: 800;
+    text-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+
+.page-header p {
+    margin-top: 10px;
+    font-size: 18px;
+    opacity: .95;
+}
+
+/* ===== TARJETA DEL FORMULARIO ===== */
+
+.contenedor {
+    width: 88%;
+    max-width: 1180px;
+    margin: -25px auto 45px;
+    background: rgba(255,255,255,.93);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 38px;
+    border-radius: 26px;
+    box-shadow: 0 18px 42px rgba(15,23,42,.16);
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(203,213,225,.60);
+}
+
+.titulo {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.titulo h2 {
+    margin: 0;
+    color: #1e3a8a;
+    font-size: 31px;
+    font-weight: 800;
+}
+
+.titulo span {
+    color: #64748b;
+    font-size: 15px;
+}
+
+/* ===== FORMULARIO ===== */
+
+form {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+}
+
+.completo {
+    grid-column: span 3;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 13px;
+    font-size: 15px;
+    background: #f8fafc;
+    outline: none;
+    transition: .25s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.13);
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* ===== SELECT2 ADAPTADO ===== */
+
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 50px;
+    border: 1px solid #cbd5e1;
+    border-radius: 13px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    transition: .25s;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default .select2-selection--single:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.13);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #1e293b;
+    line-height: 50px;
+    padding-left: 14px;
+    font-size: 15px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 50px;
+    right: 10px;
+}
+
+.select2-dropdown {
+    border-radius: 13px;
+    border: 1px solid #cbd5e1;
+    overflow: hidden;
+    box-shadow: 0 12px 26px rgba(15,23,42,.12);
+}
+
+/* ===== BOTONES ===== */
+
+.botones {
+    grid-column: span 3;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 22px;
+}
+
+button,
+.salir {
+    border: none;
+    padding: 14px 26px;
+    border-radius: 13px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: .25s;
+}
+
+button {
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    color: white;
+    box-shadow: 0 10px 22px rgba(37,99,235,.22);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    background: #1d4ed8;
+}
+
+.salir {
+    background: #64748b;
+    color: white;
+}
+
+.salir:hover {
+    transform: translateY(-2px);
+    background: #475569;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1000px) {
+    .topbar {
+        flex-direction: column;
+        gap: 14px;
+        text-align: center;
+        padding: 18px 24px;
+    }
+
+    .menu-superior {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+    }
+
+    form {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .completo,
+    .botones {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 700px) {
+    .page-header {
+        height: 220px;
+        padding: 0 25px;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .page-header h1 {
+        font-size: 30px;
+    }
+
+    .page-header p {
+        font-size: 15px;
+    }
+
+    .contenedor {
+        width: 92%;
+        padding: 26px;
+        margin-top: -35px;
+    }
+
+    form {
+        grid-template-columns: 1fr;
+    }
+
+    .completo,
+    .botones {
+        grid-column: span 1;
+    }
+
+    .botones {
+        flex-direction: column;
+    }
+
+    button,
+    .salir {
+        width: 100%;
+        text-align: center;
+    }
+}
+.page-header-contenido {
+    max-width: 700px;
+}
+
+.btn-volver-header {
+    display: inline-block;
+    margin-top: 22px;
+    background: rgba(255,255,255,0.18);
+    color: white;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 14px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.25);
+    transition: .25s;
+    position: relative;
+    z-index: 5;
+}
+
+.btn-volver-header:hover {
+    background: rgba(255,255,255,0.28);
+    transform: translateY(-2px);
+    color: white;
+}
     </style>
 </head>
 
 <body>
 
-<div class="header">
-    <h1>Hospital San José de Chincha</h1>
-    <p>Sistema Web de Gestión de Ecografías</p>
-</div>
+<header class="topbar">
+    <div class="logo-hospital">Hospital San José de Chincha</div>
+
+    <nav class="menu-superior">
+        <a href="menu.php">Inicio</a>
+        <a href="registrar_ecografia.php">Registrar</a>
+        <a href="historial_ecografias.php">Historial</a>
+        <a href="paloteo.php">Paloteo</a>
+        <a href="mantenimiento.php">Mantenimiento</a>
+        <a href="logout.php" class="btn-salir-top">Salir</a>
+    </nav>
+</header>
+
+<section class="page-header">
+    <div class="page-header-contenido">
+        <span>Área de Diagnóstico por Imágenes</span>
+        <h1>Registrar Nueva Ecografía</h1>
+        <p>Complete los datos del paciente y del examen solicitado.</p>
+
+        <a href="menu.php" class="btn-volver-header">← Volver al menú</a>
+    </div>
+</section>
 
 <div class="contenedor">
 
@@ -442,7 +832,6 @@ $examenes = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Exame
         </div>
 
         <div class="botones">
-            <a class="salir" href="menu.php">Salir</a>
             <button type="submit">Registrar Ecografía</button>
         </div>
 

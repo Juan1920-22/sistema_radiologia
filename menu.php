@@ -81,22 +81,35 @@ body {
     position: relative;
 }
 
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(241, 245, 249, 0.78);
+    z-index: -1;
+}
+
 /* BARRA SUPERIOR */
 .topbar {
     width: 100%;
-    background: #172b4d;
+    background: rgba(23, 43, 77, 0.96);
     color: white;
-    padding: 18px 42px;
+    padding: 26px 42px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 4px 18px rgba(0,0,0,.18);
 }
 
 .logo-hospital {
     font-size: 25px;
     font-weight: bold;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.4px;
     font-family: 'Times New Roman', serif;
     text-transform: uppercase;
 }
@@ -104,7 +117,7 @@ body {
 .menu-superior {
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 38px;
 }
 
 .menu-superior a {
@@ -132,7 +145,7 @@ body {
 
 /* HERO PRINCIPAL */
 .hero {
-    height: 520px; /* antes estaba más bajo */
+    height: 440px;
     position: relative;
     overflow: hidden;
 }
@@ -150,17 +163,16 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center center; /* muestra mejor la imagen */
+    object-position: center 60%;
     opacity: 0;
     transition: opacity 1s ease-in-out;
 }
-
 
 .hero-slide.active {
     opacity: 1;
 }
 
-
+/* CUADRO DE TEXTO DEL HERO */
 .hero-contenido {
     position: relative;
     z-index: 3;
@@ -169,37 +181,40 @@ body {
     margin: auto;
     display: flex;
     align-items: center;
-    padding: 0 40px;
+    justify-content: flex-start;
+    padding: 0 40px 0 90px;
     color: white;
 }
 
 .hero-texto {
-    max-width: 720px;
-    background: rgba(15, 23, 42, 0.35);
-    padding: 28px 34px;
+    max-width: 560px;
+    background: rgba(15, 23, 42, 0.42);
+    padding: 22px 28px;
     border-radius: 18px;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    transform: translateY(-18px);
 }
 
 .hero-texto h1 {
-    font-size: 56px;
-    line-height: 1.1;
-    margin: 0 0 18px;
+    font-size: 36px;
+    line-height: 1.12;
+    margin: 0 0 12px;
     font-weight: 800;
-    text-shadow: 0 4px 14px rgba(0,0,0,.35);
+    text-shadow: 0 4px 12px rgba(0,0,0,.40);
 }
-
 
 .hero-texto p {
-    font-size: 22px;
+    font-size: 15px;
+    line-height: 1.45;
     margin: 0;
-    line-height: 1.5;
-    text-shadow: 0 3px 10px rgba(0,0,0,.35);
+    text-shadow: 0 3px 8px rgba(0,0,0,.35);
 }
 
+/* PUNTOS DEL SLIDER HERO */
 .hero-puntos {
     position: absolute;
-    bottom: 22px;
+    bottom: 24px;
     left: 40px;
     display: flex;
     gap: 8px;
@@ -220,69 +235,23 @@ body {
     background: white;
 }
 
-@media (max-width: 700px) {
-    .hero {
-        height: 360px;
-    }
-
-    .hero-contenido {
-        padding: 0 24px;
-    }
-
-    .hero-texto h1 {
-        font-size: 36px;
-    }
-
-    .hero-texto p {
-        font-size: 18px;
-    }
-}
-.hero-contenido {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    max-width: 1180px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    padding: 0 40px;
-    color: white;
-}
-
-.hero-texto {
-    max-width: 720px;
-}
-
-.hero-texto h1 {
-    font-size: 52px;
-    line-height: 1.1;
-    margin: 0 0 18px;
-    font-weight: 800;
-}
-
-.hero-texto p {
-    font-size: 23px;
-    margin: 0 0 28px;
-    line-height: 1.4;
-}
-
-/* TARJETAS PRINCIPALES */
+/* CUATRO MÓDULOS PRINCIPALES */
 .modulos {
-    width: 86%;
-    max-width: 1180px;
-    margin: -75px auto 35px;
+    width: 78%;
+    max-width: 1040px;
+    margin: -70px auto 35px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     position: relative;
     z-index: 5;
-    box-shadow: 0 18px 35px rgba(15,23,42,.22);
-    border-radius: 18px;
+    box-shadow: 0 16px 30px rgba(15,23,42,.20);
+    border-radius: 16px;
     overflow: hidden;
 }
 
 .modulo {
-    min-height: 180px;
-    padding: 30px 24px;
+    min-height: 135px;
+    padding: 22px 22px;
     color: white;
     text-decoration: none;
     display: flex;
@@ -292,25 +261,26 @@ body {
 }
 
 .modulo:hover {
-    transform: translateY(-6px);
-    filter: brightness(1.08);
+    transform: translateY(-4px);
+    filter: brightness(1.06);
 }
 
 .modulo h3 {
-    font-size: 24px;
-    margin: 0 0 12px;
+    font-size: 19px;
+    margin: 0 0 8px;
+    font-weight: 800;
 }
 
 .modulo p {
-    font-size: 15px;
-    line-height: 1.5;
+    font-size: 12.5px;
+    line-height: 1.45;
     margin: 0;
     font-weight: 500;
 }
 
 .modulo span {
-    margin-top: 18px;
-    font-size: 24px;
+    margin-top: 10px;
+    font-size: 18px;
     font-weight: bold;
 }
 
@@ -341,11 +311,23 @@ body {
 }
 
 .bienvenida {
-    background: white;
-    border-radius: 20px;
-    padding: 28px;
-    box-shadow: 0 10px 26px rgba(15,23,42,.10);
     border-left: 6px solid #2563eb;
+}
+
+.bienvenida,
+.card-estadistica,
+.control-meta,
+.slider-card {
+    background: rgba(248, 250, 252, 0.90);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 22px;
+    box-shadow: 0 12px 30px rgba(15,23,42,.10);
+    border: 1px solid rgba(203, 213, 225, 0.55);
+}
+
+.bienvenida {
+    padding: 28px;
 }
 
 .bienvenida h2 {
@@ -375,10 +357,7 @@ body {
 }
 
 .card-estadistica {
-    background: white;
-    border-radius: 20px;
     padding: 24px;
-    box-shadow: 0 10px 26px rgba(15,23,42,.10);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -397,85 +376,21 @@ body {
     font-size: 14px;
 }
 
-/* PIE */
-.footer {
-    width: 100%;
-    background: #172b4d;
-    color: white;
-    text-align: center;
-    padding: 16px;
-    font-size: 14px;
-}
-
-/* RESPONSIVE */
-@media (max-width: 1000px) {
-    .modulos {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .panel-info {
-        grid-template-columns: 1fr;
-    }
-
-    .hero-texto h1 {
-        font-size: 42px;
-    }
-}
-
-@media (max-width: 700px) {
-    .topbar {
-        flex-direction: column;
-        gap: 15px;
-        padding: 18px 20px;
-        text-align: center;
-    }
-
-    .menu-superior {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 16px;
-    }
-
-    .hero {
-        height: 410px;
-    }
-
-    .hero-contenido {
-        padding: 0 25px;
-        text-align: center;
-        justify-content: center;
-    }
-
-    .hero-texto h1 {
-        font-size: 34px;
-    }
-
-    .hero-texto p {
-        font-size: 18px;
-    }
-
-    .modulos {
-        width: 90%;
-        grid-template-columns: 1fr;
-        margin-top: -50px;
-    }
-
-    .panel-info {
-        width: 90%;
-    }
-
-    .estadisticas {
-        grid-template-columns: 1fr;
-    }
-}
-.control-meta {
+/* META DIARIA */
+.zona-meta {
     width: 86%;
     max-width: 1180px;
-    margin: 0 auto 45px;
-    background: white;
+    margin: 25px auto 45px;
+    display: grid;
+    grid-template-columns: 1.3fr .9fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+.control-meta {
+    width: 100%;
+    margin: 0;
     padding: 28px;
-    border-radius: 22px;
-    box-shadow: 0 10px 26px rgba(15,23,42,.10);
 }
 
 .form-meta label {
@@ -579,38 +494,9 @@ body {
     font-size: 15px;
 }
 
-@media (max-width: 700px) {
-    .meta-fila {
-        flex-direction: column;
-    }
-
-    .resumen-meta {
-        grid-template-columns: 1fr;
-    }
-}
-.zona-meta {
-    width: 86%;
-    max-width: 1180px;
-    margin: 25px auto 45px;
-    display: grid;
-    grid-template-columns: 1.3fr .9fr;
-    gap: 24px;
-    align-items: stretch;
-}
-
-
-
-.control-meta {
-    width: 100%;
-    margin: 0;
-}
-
-
+/* SLIDER PEQUEÑO */
 .slider-card {
-    background: white;
     padding: 24px;
-    border-radius: 22px;
-    box-shadow: 0 10px 26px rgba(15,23,42,.10);
 }
 
 .slider-card h2 {
@@ -692,32 +578,97 @@ body {
     border-radius: 20px;
 }
 
-@media (max-width: 900px) {
-    .zona-meta {
+/* PIE */
+.footer {
+    width: 100%;
+    background: #172b4d;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    font-size: 14px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1000px) {
+    .topbar {
+        padding: 22px 28px;
+    }
+
+    .menu-superior {
+        gap: 24px;
+    }
+
+    .modulos {
+        width: 86%;
+        grid-template-columns: repeat(2, 1fr);
+        margin-top: -50px;
+    }
+
+    .panel-info {
         grid-template-columns: 1fr;
     }
 
-    .slider {
-        height: 260px;
+    .zona-meta {
+        grid-template-columns: 1fr;
     }
 }
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(241, 245, 249, 0.78);
-    z-index: -1;
-}
-.bienvenida,
-.card-estadistica,
-.control-meta,
-.slider-card {
-    background: rgba(248, 250, 252, 0.90);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 22px;
-    box-shadow: 0 12px 30px rgba(15,23,42,.10);
-    border: 1px solid rgba(203, 213, 225, 0.55);
+
+@media (max-width: 700px) {
+    .topbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 18px 20px;
+        text-align: center;
+    }
+
+    .menu-superior {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .hero {
+        height: 410px;
+    }
+
+    .hero-contenido {
+        padding: 0 25px;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .hero-texto {
+        transform: none;
+        max-width: 100%;
+    }
+
+    .hero-texto h1 {
+        font-size: 30px;
+    }
+
+    .hero-texto p {
+        font-size: 15px;
+    }
+
+    .modulos {
+        width: 90%;
+        grid-template-columns: 1fr;
+        margin-top: -40px;
+    }
+
+    .panel-info,
+    .zona-meta {
+        width: 90%;
+    }
+
+    .estadisticas,
+    .resumen-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .meta-fila {
+        flex-direction: column;
+    }
 }
 </style>
 </head>
@@ -729,7 +680,7 @@ body::before {
     <div class="logo-hospital">Hospital San José de Chincha</div>
 
     <nav class="menu-superior">
-        <a href="panel.php">Inicio</a>
+        <a href="menu.php">Inicio</a>
         <a href="registrar_ecografia.php">Registrar</a>
         <a href="historial_ecografias.php">Historial</a>
         <a href="paloteo.php">Paloteo</a>
