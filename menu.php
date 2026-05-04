@@ -59,6 +59,52 @@ if ($meta_diaria > 0) {
     $faltantes = 0;
     $porcentaje = 0;
 }
+$filtro_dashboard = isset($_GET['filtro_dashboard']) ? $_GET['filtro_dashboard'] : 'dia';
+$fecha_dashboard = isset($_GET['fecha_dashboard']) ? $_GET['fecha_dashboard'] : date('Y-m-d');
+
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_dashboard)) {
+    $fecha_dashboard = date('Y-m-d');
+}
+
+$fecha_segura = $conexion->real_escape_string($fecha_dashboard);
+
+$whereDashboard = "";
+$tituloFiltro = "Ecografías del día";
+
+switch ($filtro_dashboard) {
+    case 'dia':
+        $whereDashboard = "WHERE DATE(fecha) = '$fecha_segura'";
+        $tituloFiltro = "Ecografías del " . date('d/m/Y', strtotime($fecha_dashboard));
+        break;
+
+    case 'semana':
+        $whereDashboard = "WHERE YEARWEEK(fecha, 1) = YEARWEEK(CURDATE(), 1)";
+        $tituloFiltro = "Ecografías de esta semana";
+        break;
+
+    case 'mes':
+        $whereDashboard = "WHERE YEAR(fecha) = YEAR(CURDATE()) 
+                           AND MONTH(fecha) = MONTH(CURDATE())";
+        $tituloFiltro = "Ecografías de este mes";
+        break;
+
+    case 'anio':
+        $whereDashboard = "WHERE YEAR(fecha) = YEAR(CURDATE())";
+        $tituloFiltro = "Ecografías de este año";
+        break;
+
+    case 'todos':
+        $whereDashboard = "";
+        $tituloFiltro = "Total de ecografías";
+        break;
+
+    default:
+        $whereDashboard = "WHERE DATE(fecha) = CURDATE()";
+        $tituloFiltro = "Ecografías de hoy";
+        break;
+}
+
+$totalFiltrado = $conexion->query("SELECT COUNT(*) as total FROM ecografias $whereDashboard")->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -302,14 +348,13 @@ body::before {
 
 /* ESTADÍSTICAS */
 .panel-info {
-    width: 86%;
-    max-width: 1180px;
+    width: 90%;
+    max-width: 1250px;
     margin: 0 auto 45px;
     display: grid;
-    grid-template-columns: 1.2fr .8fr;
+    grid-template-columns: 1.25fr .95fr;
     gap: 24px;
 }
-
 .bienvenida {
     border-left: 6px solid #2563eb;
 }
@@ -352,7 +397,7 @@ body::before {
 
 .estadisticas {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: minmax(240px, 1fr) minmax(190px, .8fr);
     gap: 18px;
 }
 
@@ -670,6 +715,55 @@ body::before {
         flex-direction: column;
     }
 }
+.card-filtro-dashboard {
+    gap: 8px;
+}
+
+.form-filtro-dashboard {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.form-filtro-dashboard label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #1e3a8a;
+    margin-bottom: 8px;
+}
+
+.form-filtro-dashboard select,
+.form-filtro-dashboard input {
+    width: 100%;
+    height: 42px;
+    padding: 9px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: white;
+    color: #1e293b;
+    font-weight: bold;
+    outline: none;
+    margin-bottom: 8px;
+}
+
+.form-filtro-dashboard select:focus,
+.form-filtro-dashboard input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.13);
+}
+.card-estadistica {
+    min-height: 180px;
+}
+
+.card-filtro-dashboard {
+    min-width: 240px;
+}
+
+.form-filtro-dashboard select,
+.form-filtro-dashboard input {
+    width: 100%;
+    min-width: 190px;
+}
 </style>
 </head>
 
@@ -693,7 +787,7 @@ body::before {
 <section class="hero">
 
     <div class="hero-slider">
-        <img src="img/portada1.jpg?v=1" class="hero-slide active" alt="Portada 1">
+        <img src="img/portada2.jpg?v=1" class="hero-slide active" alt="Portada 2">
         <img src="img/hero2.jpg" class="hero-slide" alt="Imagen 2">
         <img src="img/hero3.jpg" class="hero-slide" alt="Imagen 3">
     </div>
@@ -754,6 +848,7 @@ body::before {
 </section>
 
 <!-- INFORMACIÓN Y CONTADORES -->
+<!-- INFORMACIÓN Y CONTADORES -->
 <section class="panel-info">
 
     <div class="bienvenida">
@@ -766,15 +861,54 @@ body::before {
     </div>
 
     <div class="estadisticas">
-        <div class="card-estadistica">
-            <h2><?php echo $total['total']; ?></h2>
-            <span>Total de ecografías</span>
+
+        <div class="card-estadistica card-filtro-dashboard">
+
+            <form method="GET" class="form-filtro-dashboard">
+                <label>Ver registros por:</label>
+
+                <select name="filtro_dashboard" id="filtro_dashboard" onchange="guardarScroll(); this.form.submit()">
+                    <option value="dia" <?php if($filtro_dashboard == 'dia') echo 'selected'; ?>>
+                        Día específico
+                    </option>
+
+                    <option value="semana" <?php if($filtro_dashboard == 'semana') echo 'selected'; ?>>
+                        Esta semana
+                    </option>
+
+                    <option value="mes" <?php if($filtro_dashboard == 'mes') echo 'selected'; ?>>
+                        Este mes
+                    </option>
+
+                    <option value="anio" <?php if($filtro_dashboard == 'anio') echo 'selected'; ?>>
+                        Este año
+                    </option>
+
+                    <option value="todos" <?php if($filtro_dashboard == 'todos') echo 'selected'; ?>>
+                        Todos
+                    </option>
+                </select>
+
+                <input 
+                type="date" 
+                name="fecha_dashboard" 
+                id="fecha_dashboard"
+                value="<?php echo $fecha_dashboard; ?>"
+                max="<?php echo date('Y-m-d'); ?>"
+                onchange="guardarScroll(); this.form.submit()"
+>
+            </form>
+
+            <h2><?php echo $totalFiltrado['total']; ?></h2>
+            <span><?php echo $tituloFiltro; ?></span>
+
         </div>
 
         <div class="card-estadistica">
             <h2><?php echo $hoy['total']; ?></h2>
             <span>Registradas hoy</span>
         </div>
+
     </div>
 
 </section>
@@ -912,6 +1046,41 @@ function cambiarHero() {
 }
 
 setInterval(cambiarHero, 5000);
+</script>
+<script>
+function controlarFechaDashboard() {
+    const filtro = document.getElementById("filtro_dashboard");
+    const fecha = document.getElementById("fecha_dashboard");
+
+    if (filtro.value === "dia") {
+        fecha.style.display = "block";
+    } else {
+        fecha.style.display = "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", controlarFechaDashboard);
+document.getElementById("filtro_dashboard").addEventListener("change", controlarFechaDashboard);
+</script>
+<script>
+function guardarScroll() {
+    sessionStorage.setItem("posicionScrollMenu", window.scrollY);
+}
+
+window.addEventListener("load", function () {
+    const posicion = sessionStorage.getItem("posicionScrollMenu");
+
+    if (posicion !== null) {
+        window.scrollTo(0, parseInt(posicion));
+        sessionStorage.removeItem("posicionScrollMenu");
+    }
+});
+
+document.querySelectorAll("form").forEach(function(formulario) {
+    formulario.addEventListener("submit", function() {
+        guardarScroll();
+    });
+});
 </script>
 </body>
 </html>

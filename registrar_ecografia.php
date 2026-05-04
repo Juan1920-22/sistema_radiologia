@@ -457,7 +457,7 @@ textarea {
     margin-top: 22px;
 }
 
-button,
+.botones button,
 .salir {
     border: none;
     padding: 14px 26px;
@@ -469,17 +469,16 @@ button,
     transition: .25s;
 }
 
-button {
+.botones button {
     background: linear-gradient(90deg, #2563eb, #1d4ed8);
     color: white;
     box-shadow: 0 10px 22px rgba(37,99,235,.22);
 }
 
-button:hover {
+.botones button:hover {
     transform: translateY(-2px);
     background: #1d4ed8;
 }
-
 .salir {
     background: #64748b;
     color: white;
@@ -584,6 +583,19 @@ button:hover {
     transform: translateY(-2px);
     color: white;
 }
+/* CORRECCIÓN SELECT2: elimina la mancha azul */
+.select2-selection__clear {
+    display: none !important;
+}
+
+.select2-container--default .select2-selection--single button {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    width: auto !important;
+    height: auto !important;
+}
     </style>
 </head>
 
@@ -660,20 +672,6 @@ button:hover {
     <select class="buscador" name="condicion" required>
         <option value="">Seleccione o escriba...</option>
 
-        <option value="Asegurado">Asegurado</option>
-        <option value="No asegurado">No asegurado</option>
-        <option value="Referido">Referido</option>
-        <option value="Particular">Particular</option>
-        <option value="SIS">SIS</option>
-        <option value="Essalud">Essalud</option>
-        <option value="Convenios">Convenios</option>
-        <option value="Contado">Contado</option>
-        <option value="Exonerado Parcial">Exonerado Parcial</option>
-        <option value="Exonerado Total">Exonerado Total</option>
-        <option value="Ley de emergencia">Ley de emergencia</option>
-        <option value="Pago parcial">Pago parcial</option>
-        <option value="Credito">Credito</option>
-
         <?php while($c = $condiciones->fetch_assoc()) { ?>
             <option value="<?php echo $c['nombre']; ?>">
                 <?php echo $c['nombre']; ?>
@@ -681,7 +679,6 @@ button:hover {
         <?php } ?>
     </select>
 </div>
-
 <!-- 👇 CONVENIO -->
 <div class="campo" id="campo_convenio" style="display:none;">
     <label>Convenio:</label>
@@ -703,46 +700,17 @@ button:hover {
     <input type="text" name="numero_boleta" id="numero_boleta" placeholder="Ingrese número de boleta">
 </div>
         <div class="campo">
-            <label>Servicio solicitante:</label>
-            <select class="buscador" name="servicio_solicitante" required>
-    <option value="">Seleccione o escriba...</option>
-    <option>Cardiología</option>
-                <option>Cirugía</option>
-                <option>Consultorio externo</option>
-                <option>COVID-19</option>
-                <option>Dengue</option>
-                <option>Emergencia</option>
-                <option>Endocrinología</option>
-                <option>Gastroenterología</option>
-                <option>Ginecología</option>
-                <option>Infectología</option>
-                <option>Medicina</option>
-                <option>Medicina física y rehabilitación</option>
-                <option>Nefrología</option>
-                <option>Neonatología</option>
-                <option>Neumología</option>
-                <option>Neurología</option>
-                <option>Obstetricia</option>
-                <option>Oncología</option>
-                <option>Otorrinolaringología</option>
-                <option>Pediatría</option>
-                <option>Psiquiatría</option>
-                <option>Reumatología</option>
-                <option>Shock trauma</option>
-                <option>Traumatología</option>
-                <option>UCIN</option>
-                <option>Urología</option>
-                <option>UVI</option>
-                <option>UVICLIN</option>
-                <option>Vésico prostático</option>
+    <label>Servicio solicitante:</label>
+    <select class="buscador" name="servicio_solicitante" required>
+        <option value="">Seleccione o escriba...</option>
 
-    <?php while($s = $servicios->fetch_assoc()) { ?>
-        <option value="<?php echo $s['nombre']; ?>">
-            <?php echo $s['nombre']; ?>
-        </option>
-    <?php } ?>
-</select>
-        </div>
+        <?php while($s = $servicios->fetch_assoc()) { ?>
+            <option value="<?php echo $s['nombre']; ?>">
+                <?php echo $s['nombre']; ?>
+            </option>
+        <?php } ?>
+    </select>
+</div>
 
         <div class="campo">
             <label>Médico turno:</label>
@@ -772,60 +740,18 @@ button:hover {
             </select>
         </div>
 
-        <div class="campo completo">
-            <label>Examen solicitado:</label>
-            <select class="buscador" name="examen_solicitado" required>
-    <option value="">Seleccione o escriba...</option>
-                <option>Abdominal superior</option>
-                <option>Retroperitoneal</option>
-                <option>Pélvica</option>
-                <option>Transvaginal</option>
-                <option>Obstetricia</option>
-                <option>Renal y vejiga</option>
-                <option>Vejiga y próstata</option>
-                <option>Transrectal</option>
-                <option>De pulmones</option>
-                <option>Ecografía de partes blandas</option>
-                <option>Transfontanelar</option>
-                <option>Tejidos blandos de cuero cabelludo</option>
-                <option>Tejidos blandos de cuello</option>
-                <option>De tiroides</option>
-                <option>De mamas</option>
-                <option>Tejidos blandos de tórax</option>
-                <option>Tejidos blandos de abdomen</option>
-                <option>Tejidos blandos de pelvis</option>
-                <option>Testicular</option>
-                <option>Histerosonografía</option>
-                <option>De hernia umbilical</option>
-                <option>De hernia inguinal</option>
-                <option>De hernia inguinal bilateral</option>
-                <option>Eventración</option>
-                <option>Partes blandas tumoraciones-colecciones</option>
-                <option>Doppler carotídeo</option>
-                <option>Doppler ABC. SUP</option>
-                <option>Doppler renal</option>
-                <option>Doppler prostático</option>
-                <option>Doppler testicular</option>
-                <option>Doppler ginecología</option>
-                <option>Doppler obstétrico</option>
-                <option>Doppler ART M.SUP</option>
-                <option>Doppler ART. M. SUP. BILATERAL</option>
-                <option>Doppler ART. M. INF</option>
-                <option>Doppler ART. M. INF. BILATERAL</option>
-                <option>Doppler venoso M.SUP</option>
-                <option>Doppler venoso M. SUP. BILATERAL</option>
-                <option>Doppler venoso M. INF</option>
-                <option>Doppler venoso M. INF. BILATERAL</option>
+<div class="campo completo">
+    <label>Examen solicitado:</label>
+    <select class="buscador" name="examen_solicitado" required>
+        <option value="">Seleccione o escriba...</option>
 
-    <?php while($e = $examenes->fetch_assoc()) { ?>
-        <option value="<?php echo $e['nombre']; ?>">
-            <?php echo $e['nombre']; ?>
-        </option>
-    <?php } ?>
-</select>
-
-        </div>
-
+        <?php while($e = $examenes->fetch_assoc()) { ?>
+            <option value="<?php echo $e['nombre']; ?>">
+                <?php echo $e['nombre']; ?>
+            </option>
+        <?php } ?>
+    </select>
+</div>
         <div class="campo completo">
             <label>Diagnóstico:</label>
             <textarea name="diagnostico" placeholder="Ingrese el diagnóstico del paciente..."></textarea>
@@ -846,12 +772,12 @@ button:hover {
 
 <script>
     $(document).ready(function() {
-        $('.buscador').select2({
-            placeholder: "Seleccione o escriba...",
-            allowClear: true,
-            width: '100%'
-        });
+    $('.buscador').select2({
+        placeholder: "Seleccione o escriba...",
+        allowClear: false,
+        width: '100%'
     });
+});
 
     flatpickr("#fecha", {
         locale: "es",
