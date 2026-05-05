@@ -141,56 +141,14 @@ $examenes = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Exame
             right: 10px;
         }
 
-        .select2-dropdown {
-            border-radius: 12px;
-            border: 1px solid #cbd5e1;
-            overflow: hidden;
-        }
+        .select2-results__options {
+    max-height: 120px !important;
+    overflow-y: auto !important;
+}
 
-        .select2-search__field {
-            border-radius: 8px !important;
-            padding: 10px !important;
-            outline: none;
-        }
-
-        .botones {
-            grid-column: span 3;
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        button, .salir {
-            border: none;
-            padding: 14px 30px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 15px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        button {
-            background: #2563eb;
-            color: white;
-        }
-
-        button:hover { background: #1d4ed8; }
-
-        .salir {
-            background: #64748b;
-            color: white;
-        }
-
-        .salir:hover { background: #475569; }
-
-        .flatpickr-day.disabled,
-        .flatpickr-day.disabled:hover {
-            color: #cbd5e1 !important;
-            cursor: not-allowed !important;
-            background: #f1f5f9 !important;
-        }
+.select2-dropdown {
+    z-index: 99999 !important;
+}
 
         @media (max-width: 900px) {
             .header {
@@ -596,6 +554,101 @@ textarea {
     width: auto !important;
     height: auto !important;
 }
+
+
+.select2-dropdown {
+    max-height: 230px !important;
+    overflow-y: auto !important;
+}
+
+.select2-results__options {
+    max-height: 160px !important;
+    overflow-y: auto !important;
+}
+
+/* Tamaño controlado del desplegable */
+.select2-results__options {
+    max-height: 145px !important;
+    overflow-y: auto !important;
+}
+
+/* Evita que el dropdown se vea demasiado grande */
+.select2-dropdown {
+    z-index: 99999 !important;
+}
+/* ESPACIO EXTRA PARA CUANDO APARECEN CAMPOS DINÁMICOS */
+
+.select2-results__options {
+    max-height: 150px !important;
+    overflow-y: auto !important;
+}
+/* ===== CORRECCIÓN SELECT2 ===== */
+
+.select2-dropdown {
+    z-index: 999999 !important;
+    border-radius: 13px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 12px 26px rgba(15,23,42,.16);
+}
+
+.select2-results__options {
+    max-height: 180px !important;
+    overflow-y: auto !important;
+}
+
+.select2-container--open {
+    z-index: 999999 !important;
+}
+
+.select2-selection__clear {
+    display: none !important;
+}
+
+.select2-container--default .select2-selection--single button {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border: none !important;
+}
+.select2-container--open .select2-dropdown--below {
+    margin-top: 4px !important;
+}
+
+.select2-container--open .select2-dropdown--above {
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+}
+.contenedor {
+    padding-bottom: 260px !important;
+}
+
+.select2-dropdown {
+    z-index: 999999 !important;
+}
+
+.select2-results__options {
+    max-height: 170px !important;
+    overflow-y: auto !important;
+}
+html {
+    scroll-behavior: smooth;
+}
+body {
+    padding-bottom: 350px;
+}
+
+.select2-dropdown {
+    z-index: 999999 !important;
+}
+.btn-limpiar {
+    background: #e2e8f0 !important;
+    color: #1e293b !important;
+    box-shadow: none !important;
+}
+
+.btn-limpiar:hover {
+    background: #cbd5e1 !important;
+}
     </style>
 </head>
 
@@ -649,22 +702,18 @@ textarea {
         </div>
 
         <div class="campo">
-            <label>Sexo:</label>
-            <select class="buscador" name="sexo" required>
-                <option value="">Seleccione o escriba...</option>
-                <option value="Hombre">Hombre</option>
-                <option value="Mujer">Mujer</option>
-            </select>
-        </div>
+    <label>Sexo:</label>
+    <input type="text" name="sexo" id="sexo" required placeholder="H = Hombre / M = Mujer">
+</div>
 
         <div class="campo">
             <label>Apellidos:</label>
-            <input type="text" name="apellidos" required>
+            <input type="text" name="apellidos" id="apellidos" required>
         </div>
 
         <div class="campo">
             <label>Nombres:</label>
-            <input type="text" name="nombres" required>
+            <input type="text" name="nombres" id="nombres" required>
         </div>
 
         <div class="campo">
@@ -682,7 +731,7 @@ textarea {
 <!-- 👇 CONVENIO -->
 <div class="campo" id="campo_convenio" style="display:none;">
     <label>Convenio:</label>
-    <select name="convenio" id="convenio">
+    <select name="convenio" id="convenio" class="buscador">
         <option value="">Seleccione convenio</option>
         <option value="Policía">Policía</option>
         <option value="Municipalidad">Municipalidad</option>
@@ -742,7 +791,7 @@ textarea {
 
 <div class="campo completo">
     <label>Examen solicitado:</label>
-    <select class="buscador" name="examen_solicitado" required>
+    <select class="buscador" name="examen_solicitado" id="examen_solicitado" required>
         <option value="">Seleccione o escriba...</option>
 
         <?php while($e = $examenes->fetch_assoc()) { ?>
@@ -757,9 +806,13 @@ textarea {
             <textarea name="diagnostico" placeholder="Ingrese el diagnóstico del paciente..."></textarea>
         </div>
 
-        <div class="botones">
-            <button type="submit">Registrar Ecografía</button>
-        </div>
+<div class="botones">
+<button type="button" id="btnLimpiar" class="btn-limpiar">
+        Limpiar
+       </button>
+
+      <button type="submit">Registrar Ecografía</button>
+      </div>
 
     </form>
 </div>
@@ -773,21 +826,59 @@ textarea {
 <script>
     $(document).ready(function() {
     $('.buscador').select2({
-        placeholder: "Seleccione o escriba...",
-        allowClear: false,
-        width: '100%'
-    });
+    placeholder: "Seleccione o escriba...",
+    allowClear: false,
+    width: '100%',
+    dropdownParent: $('body')
+});
+$('#convenio').select2('destroy').select2({
+    placeholder: "Seleccione o escriba...",
+    allowClear: false,
+    width: '100%',
+    dropdownParent: $('body'),
+    tags: true,
+    createTag: function(params) {
+        let term = $.trim(params.term);
+
+        if (term === '') {
+            return null;
+        }
+
+        return {
+            id: term,
+            text: term,
+            newTag: true
+        };
+    }
+});
 });
 
-    flatpickr("#fecha", {
-        locale: "es",
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "d/m/Y",
-        maxDate: "today",
-        allowInput: false,
-        disableMobile: true
-    });
+    const calendarioFecha = flatpickr("#fecha", {
+    locale: "es",
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "d/m/Y",
+    maxDate: "today",
+    allowInput: true,
+    disableMobile: true,
+
+    onReady: function(selectedDates, dateStr, instance) {
+        instance.altInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                instance.close();
+                document.getElementById("sexo").focus();
+            }
+        });
+    },
+
+    onChange: function(selectedDates, dateStr, instance) {
+        instance.close();
+        setTimeout(function() {
+            document.getElementById("sexo").focus();
+        }, 100);
+    }
+});
 </script>
 <script>
 document.getElementById("dni").addEventListener("input", function() {
@@ -833,6 +924,7 @@ function controlarCamposPago() {
 
     let monto = document.getElementById("monto");
     let boleta = document.getElementById("numero_boleta");
+    let convenio = document.getElementById("convenio");
 
     campoMonto.style.display = "none";
     campoBoleta.style.display = "none";
@@ -840,6 +932,7 @@ function controlarCamposPago() {
 
     monto.required = false;
     boleta.required = false;
+    convenio.required = false;
 
     if (condicion === "Particular") {
         campoMonto.style.display = "flex";
@@ -859,15 +952,357 @@ function controlarCamposPago() {
 
     if (condicion === "Convenios") {
         campoConvenio.style.display = "flex";
+        convenio.required = true;
     }
 }
-
 $(document).ready(function() {
     $('[name="condicion"]').on('change', function() {
         controlarCamposPago();
     });
 
     controlarCamposPago();
+});
+</script>
+<script>
+function enfocarSiguienteCampo(actual) {
+    const form = document.querySelector("form");
+
+    const campos = Array.from(form.querySelectorAll(
+        'input:not([type="hidden"]), select, textarea, button[type="submit"]'
+    )).filter(campo => {
+        const contenedor = campo.closest(".campo");
+        return !campo.disabled && (!contenedor || contenedor.style.display !== "none");
+    });
+
+    const index = campos.indexOf(actual);
+
+    if (index >= 0 && index < campos.length - 1) {
+        const siguiente = campos[index + 1];
+
+        if ($(siguiente).hasClass("buscador")) {
+    $(siguiente).select2("open");
+}
+    }
+}
+
+/* ENTER: va solo a campos vacíos; si no hay vacíos, registra */
+document.querySelector("form").addEventListener("keydown", function(e) {
+    if (
+    e.key === "Enter" &&
+    !document.querySelector(".flatpickr-calendar.open") &&
+    e.target.id !== "sexo" &&
+    e.target.id !== "dni"
+    && !$(e.target).hasClass("select2-search__field")
+) {
+        if (e.target.tagName === "TEXTAREA") {
+    e.preventDefault();
+    document.querySelector('button[type="submit"]').focus();
+    return;
+}
+
+        if (e.target.type === "submit") {
+            return;
+        }
+
+        e.preventDefault();
+
+        const form = document.querySelector("form");
+
+        const camposVacios = Array.from(form.querySelectorAll(
+            'input[required], select[required], textarea[required]'
+        )).filter(campo => {
+            const contenedor = campo.closest(".campo");
+
+            if (contenedor && contenedor.style.display === "none") {
+                return false;
+            }
+
+            return !campo.value || campo.value.trim() === "";
+        });
+
+        if (camposVacios.length > 0) {
+    let actual = e.target;
+    let posicionActual = Array.from(form.elements).indexOf(actual);
+
+    let siguienteVacio = camposVacios.find(campo => {
+        return Array.from(form.elements).indexOf(campo) > posicionActual;
+    });
+
+    if (!siguienteVacio) {
+        siguienteVacio = camposVacios[0];
+    }
+
+    if (siguienteVacio.id === "fecha") {
+    calendarioFecha.open();
+
+    setTimeout(() => {
+        const inputFecha = document.querySelector("#fecha");
+
+        inputFecha.addEventListener("keydown", function handler(ev) {
+            if (ev.key === "Enter") {
+                ev.preventDefault();
+                calendarioFecha.close();
+                document.getElementById("sexo").focus();
+                inputFecha.removeEventListener("keydown", handler);
+            }
+        });
+    }, 100);
+}
+    else if ($(siguienteVacio).hasClass("buscador")) {
+        $(siguienteVacio).select2("open");
+    } else {
+        siguienteVacio.focus();
+    }
+} else {
+    document.querySelector('button[type="submit"]').focus();
+}
+    }
+});
+const sexoInput = document.getElementById("sexo");
+
+sexoInput.addEventListener("keydown", function(e) {
+    if (e.key === "Backspace" || e.key === "Delete") {
+        this.dataset.borrando = "1";
+    } else {
+        this.dataset.borrando = "0";
+    }
+
+    if (e.key === "Enter") {
+        e.preventDefault();
+
+        let valor = this.value.trim().toLowerCase();
+
+        if (valor === "h" || valor === "hombre") {
+            this.value = "Hombre";
+        } else if (valor === "m" || valor === "mujer") {
+            this.value = "Mujer";
+        }
+
+        // Ahora va al siguiente campo vacío, no borra el autocompletado
+        const form = document.querySelector("form");
+
+        const camposVacios = Array.from(form.querySelectorAll(
+            'input[required], select[required], textarea[required]'
+        )).filter(campo => {
+            const contenedor = campo.closest(".campo");
+            if (contenedor && contenedor.style.display === "none") return false;
+            return !campo.value || campo.value.trim() === "";
+        });
+
+        let siguienteVacio = camposVacios.find(campo => campo !== this);
+
+        if (siguienteVacio) {
+            if ($(siguienteVacio).hasClass("buscador")) {
+                $(siguienteVacio).select2("open");
+            } else {
+                siguienteVacio.focus();
+            }
+        } else {
+            document.querySelector('button[type="submit"]').focus();
+        }
+    }
+});
+
+sexoInput.addEventListener("input", function() {
+    if (this.dataset.borrando === "1") {
+        return;
+    }
+
+    let valor = this.value.trim().toLowerCase();
+
+    if (valor === "h") {
+        this.value = "Hombre";
+    }
+
+    if (valor === "m") {
+        this.value = "Mujer";
+    }
+});
+
+/* Validación visual antes de registrar */
+document.querySelector("form").addEventListener("submit", function(e) {
+    let faltan = [];
+
+    this.querySelectorAll("[required]").forEach(campo => {
+        const contenedor = campo.closest(".campo");
+
+        if (contenedor && contenedor.style.display === "none") {
+            return;
+        }
+
+        let label = contenedor ? contenedor.querySelector("label") : null;
+        let nombreCampo = label ? label.innerText.replace(":", "") : campo.name;
+
+        if (!campo.value || campo.value.trim() === "") {
+            faltan.push({
+                campo: campo,
+                nombre: nombreCampo
+            });
+
+            campo.style.border = "2px solid #dc2626";
+
+            if ($(campo).hasClass("buscador")) {
+                $(campo).next(".select2-container").find(".select2-selection").css({
+                    "border": "2px solid #dc2626"
+                });
+            }
+        } else {
+            campo.style.border = "";
+
+            if ($(campo).hasClass("buscador")) {
+                $(campo).next(".select2-container").find(".select2-selection").css({
+                    "border": ""
+                });
+            }
+        }
+    });
+
+    if (faltan.length > 0) {
+        e.preventDefault();
+
+        let mensaje = "";
+
+        if (faltan.length === 1) {
+            mensaje = "Falta completar el campo: " + faltan[0].nombre;
+        } else {
+            mensaje = "Faltan completar estos campos: " + faltan.map(item => item.nombre).join(", ");
+        }
+
+        Swal.fire({
+            icon: "warning",
+            title: "Faltan datos",
+            text: mensaje,
+            confirmButtonColor: "#2563eb"
+        }).then(() => {
+            let primerCampo = faltan[0].campo;
+
+            if ($(primerCampo).hasClass("buscador")) {
+                $(primerCampo).select2("open");
+            } else {
+                primerCampo.focus();
+            }
+        });
+
+        return false;
+    }
+
+    return true;
+});
+</script>
+<script>
+$(document).on('select2:open', function() {
+    setTimeout(function() {
+        const buscador = document.querySelector('.select2-container--open .select2-search__field');
+        if (buscador) {
+            buscador.focus();
+            buscador.select();
+        }
+    }, 80);
+});
+
+$('.buscador').on('select2:select', function() {
+    setTimeout(() => {
+        const form = document.querySelector("form");
+        const campos = Array.from(form.querySelectorAll(
+            'input:not([type="hidden"]), select, textarea'
+        )).filter(campo => {
+            const contenedor = campo.closest(".campo");
+            return !campo.disabled && (!contenedor || contenedor.style.display !== "none");
+        });
+
+        const index = campos.indexOf(this);
+        const siguiente = campos[index + 1];
+
+        if (siguiente) {
+            if ($(siguiente).hasClass("buscador")) {
+                $(siguiente).next(".select2-container").find(".select2-selection").focus();
+            } else {
+                siguiente.focus();
+            }
+        }
+    }, 100);
+});
+/* Moverse entre casillas con flechas del teclado */
+document.addEventListener("keydown", function(e) {
+    if (!["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+
+    if (
+        document.querySelector(".select2-container--open") ||
+        document.querySelector(".flatpickr-calendar.open")
+    ) {
+        return;
+    }
+
+    e.preventDefault();
+
+    const form = document.querySelector("form");
+
+    const campos = Array.from(form.querySelectorAll(
+        'input:not([type="hidden"]), select, textarea'
+    )).filter(campo => {
+        const contenedor = campo.closest(".campo");
+        return !campo.disabled && (!contenedor || contenedor.style.display !== "none");
+    });
+
+    let actual = document.activeElement;
+
+    if (actual.classList.contains("select2-selection")) {
+        actual = $(actual).closest(".select2-container").prev("select")[0];
+    }
+
+    let index = campos.indexOf(actual);
+    if (index === -1) return;
+
+    let columnas = 3;
+    let nuevoIndex = index;
+
+    if (e.key === "ArrowRight") nuevoIndex = index + 1;
+    if (e.key === "ArrowLeft") nuevoIndex = index - 1;
+    if (e.key === "ArrowDown") nuevoIndex = index + columnas;
+    if (e.key === "ArrowUp") nuevoIndex = index - columnas;
+
+    if (nuevoIndex < 0 || nuevoIndex >= campos.length) return;
+
+    const siguiente = campos[nuevoIndex];
+
+    if ($(siguiente).hasClass("buscador")) {
+        $(siguiente).next(".select2-container").find(".select2-selection").focus();
+    } else {
+        siguiente.focus();
+    }
+});
+document.querySelector('textarea[name="diagnostico"]').addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        document.querySelector('button[type="submit"]').focus();
+        return false;
+    }
+}, true);
+document.getElementById("btnLimpiar").addEventListener("click", function() {
+    document.querySelector("form").reset();
+
+    $('.buscador').val('').trigger('change');
+
+    calendarioFecha.clear();
+
+    document.getElementById("campo_monto").style.display = "none";
+    document.getElementById("campo_boleta").style.display = "none";
+    document.getElementById("campo_convenio").style.display = "none";
+
+    document.getElementById("monto").required = false;
+    document.getElementById("numero_boleta").required = false;
+    document.getElementById("convenio").required = false;
+
+    document.querySelectorAll("input, textarea, select").forEach(campo => {
+        campo.style.border = "";
+    });
+
+    $('.select2-selection').css("border", "");
+
+    document.querySelector('[name="historia_clinica"]').focus();
 });
 </script>
 </body>
