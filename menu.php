@@ -338,7 +338,7 @@ body::before {
     background: rgba(14, 116, 144, .88);
 }
 
-.paloteo {
+.reportes {
     background: rgba(22, 163, 74, .90);
 }
 
@@ -777,7 +777,7 @@ body::before {
         <a href="menu.php">Inicio</a>
         <a href="registrar_ecografia.php">Registrar</a>
         <a href="historial_ecografias.php">Historial</a>
-        <a href="paloteo.php">Paloteo</a>
+        <a href="reportes.php">Reportes</a>
         <a href="mantenimiento.php">Mantenimiento</a>
         <a href="logout.php" class="btn-salir">Salir</a>
     </nav>
@@ -829,10 +829,10 @@ body::before {
         <span>➜</span>
     </a>
 
-    <a href="paloteo.php" class="modulo paloteo">
+    <a href="reportes.php" class="modulo reportes">
         <div>
-            <h3>Paloteo</h3>
-            <p>Controlar y revisar las atenciones realizadas durante la jornada.</p>
+            <h3>Reportes</h3>
+            <p>Generar informes estadísticos mensuales, CPT-Code y reportes por servicio.</p>
         </div>
         <span>➜</span>
     </a>

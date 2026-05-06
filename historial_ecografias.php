@@ -213,13 +213,11 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
            text-align: center;
         }
 
-        th {
-           background: #1e3a8a;
-           color: white;
-           padding: 13px 10px;
-           text-align: center;
-           vertical-align: middle;
-        }
+th {
+    background: #1e3a8a !important;
+    color: white !important;
+    font-weight: bold;
+}
 
         td {
            padding: 12px 10px;
@@ -305,6 +303,63 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
     width: 100%;
     height: px;
     background: #172b4d;
+}
+.imprimir {
+    background: #7c3aed;
+}
+
+.imprimir:hover {
+    background: #6d28d9;
+}
+* {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+@media print {
+    body {
+        background: white;
+    }
+
+    .volver,
+    .filtros,
+    .acciones-tabla,
+    th:last-child,
+    td:last-child {
+        display: none !important;
+    }
+
+    .contenedor {
+        margin: 0;
+        max-width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 10px;
+    }
+
+    table {
+        min-width: 100%;
+        font-size: 8px;
+    }
+
+    th,
+    td {
+        padding: 4px;
+    }
+
+    @page {
+        size: A4 landscape;
+        margin: 8mm;
+    }
+}
+@media print {
+    .tabla-contenedor {
+        background: white !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    .contenedor {
+        background: white !important;
+    }
 }
     </style>
 </head>
@@ -459,7 +514,11 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
 
         <div class="acciones filtros-botones">
             <button type="button" id="btnPDF" class="btn export">Descargar PDF</button>
+
+            <button type="button" class="btn imprimir" onclick="window.print()">Imprimir</button>
+
             <button type="submit" class="btn buscar">Buscar</button>
+
             <a href="historial_ecografias.php" class="btn limpiar">Limpiar</a>
         </div>
 
