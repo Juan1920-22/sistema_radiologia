@@ -661,7 +661,7 @@ body {
         <a href="menu.php">Inicio</a>
         <a href="registrar_ecografia.php">Registrar</a>
         <a href="historial_ecografias.php">Historial</a>
-        <a href="paloteo.php">Paloteo</a>
+        <a href="reportes.php">Reportes</a>
         <a href="mantenimiento.php">Mantenimiento</a>
         <a href="logout.php" class="btn-salir-top">Salir</a>
     </nav>
@@ -688,7 +688,7 @@ body {
 
         <div class="campo">
             <label>H.C:</label>
-            <input type="text" name="historia_clinica" required>
+            <input type="text"name="historia_clinica"id="historia_clinica" required>
         </div>
 
         <div class="campo">
@@ -863,21 +863,96 @@ $('#convenio').select2('destroy').select2({
     disableMobile: true,
 
     onReady: function(selectedDates, dateStr, instance) {
-        instance.altInput.addEventListener("keydown", function(e) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                instance.close();
-                document.getElementById("sexo").focus();
-            }
-        });
-    },
 
-    onChange: function(selectedDates, dateStr, instance) {
-        instance.close();
-        setTimeout(function() {
-            document.getElementById("sexo").focus();
-        }, 100);
-    }
+    instance.altInput.addEventListener("keydown", function(e) {
+
+        if (e.key === "Enter") {
+
+            e.preventDefault();
+
+            instance.close();
+
+            // 🔥 IR AL SIGUIENTE CAMPO VACÍO
+
+            setTimeout(() => {
+
+                const form = document.querySelector("form");
+
+                const camposVacios = Array.from(
+                    form.querySelectorAll(
+                        'input[required], select[required], textarea[required]'
+                    )
+                ).filter(campo => {
+
+                    const contenedor = campo.closest(".campo");
+
+                    if (contenedor && contenedor.style.display === "none") {
+                        return false;
+                    }
+
+                    return !campo.value || campo.value.trim() === "";
+
+                });
+
+                if (camposVacios.length > 0) {
+
+                    const siguiente = camposVacios[0];
+
+                    if ($(siguiente).hasClass("buscador")) {
+
+                        $(siguiente).select2("open");
+
+                    } else {
+
+                        siguiente.focus();
+                    }
+                }
+
+            }, 100);
+        }
+    });
+},
+
+onChange: function(selectedDates, dateStr, instance) {
+
+    instance.close();
+
+    setTimeout(() => {
+
+        const form = document.querySelector("form");
+
+        const camposVacios = Array.from(
+            form.querySelectorAll(
+                'input[required], select[required], textarea[required]'
+            )
+        ).filter(campo => {
+
+            const contenedor = campo.closest(".campo");
+
+            if (contenedor && contenedor.style.display === "none") {
+                return false;
+            }
+
+            return !campo.value || campo.value.trim() === "";
+
+        });
+
+        if (camposVacios.length > 0) {
+
+            const siguiente = camposVacios[0];
+
+            if ($(siguiente).hasClass("buscador")) {
+
+                $(siguiente).select2("open");
+
+            } else {
+
+                siguiente.focus();
+            }
+        }
+
+    }, 100);
+}
 });
 </script>
 <script>
@@ -995,8 +1070,6 @@ document.querySelector("form").addEventListener("keydown", function(e) {
     && !$(e.target).hasClass("select2-search__field")
 ) {
         if (e.target.tagName === "TEXTAREA") {
-    e.preventDefault();
-    document.querySelector('button[type="submit"]').focus();
     return;
 }
 
@@ -1304,6 +1377,88 @@ document.getElementById("btnLimpiar").addEventListener("click", function() {
 
     document.querySelector('[name="historia_clinica"]').focus();
 });
+</script>
+<script>
+
+document.getElementById("dni").addEventListener("keyup", function(){
+
+    let dni = this.value;
+
+    if(dni.length >= 8){
+
+        fetch("buscar_paciente.php", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+
+            body: "dni=" + dni
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            if(data.success){
+
+                document.getElementById("historia_clinica").value =
+                data.historia_clinica;
+
+                document.getElementById("apellidos").value =
+                data.apellidos;
+
+                document.getElementById("nombres").value =
+                data.nombres;
+
+                document.getElementById("sexo").value =
+                data.sexo;
+
+                // 🔥 IR AL SIGUIENTE CAMPO VACÍO
+
+                setTimeout(() => {
+
+                    const form = document.querySelector("form");
+
+                    const camposVacios = Array.from(
+                        form.querySelectorAll(
+                            'input[required], select[required], textarea[required]'
+                        )
+                    ).filter(campo => {
+
+                        const contenedor = campo.closest(".campo");
+
+                        if (contenedor && contenedor.style.display === "none") {
+                            return false;
+                        }
+
+                        return !campo.value || campo.value.trim() === "";
+
+                    });
+
+                    if (camposVacios.length > 0) {
+
+                        const siguiente = camposVacios[0];
+
+                        if ($(siguiente).hasClass("buscador")) {
+
+                            $(siguiente).select2("open");
+
+                        } else {
+
+                            siguiente.focus();
+                        }
+                    }
+
+                }, 200);
+            }
+        });
+    }
+
+});
+
 </script>
 </body>
 </html>

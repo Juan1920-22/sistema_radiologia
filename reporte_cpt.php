@@ -23,7 +23,7 @@ $meses = [
     5 => 'MAYO', 6 => 'JUNIO', 7 => 'JULIO', 8 => 'AGOSTO',
     9 => 'SETIEMBRE', 10 => 'OCTUBRE', 11 => 'NOVIEMBRE', 12 => 'DICIEMBRE'
 ];
-
+$periodo_busqueda = $anio . '-' . str_pad($mes, 2, '0', STR_PAD_LEFT);
 $stmt = $conexion->prepare("
     SELECT 
         c.codigo_cpt,
@@ -33,14 +33,13 @@ $stmt = $conexion->prepare("
         COUNT(*) AS total
     FROM ecografias e
     INNER JOIN cpt_codes c 
-        ON e.examen_solicitado = c.examen_solicitado
-    WHERE MONTH(e.fecha) = ?
-    AND YEAR(e.fecha) = ?
+        ON e.id_examen = c.id_examen
+    WHERE DATE_FORMAT(e.fecha, '%Y-%m') = ?
     GROUP BY c.codigo_cpt, c.examen_solicitado, c.co_codups, c.servicio_especialidad
     ORDER BY c.codigo_cpt ASC
 ");
 
-$stmt->bind_param("ii", $mes, $anio);
+$stmt->bind_param("s", $periodo_busqueda);
 $stmt->execute();
 $resultado = $stmt->get_result();
 

@@ -17,64 +17,31 @@ if ($mes < 1 || $mes > 12) {
 
 $diasMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
 
-$ecografias = [
-    'Abdominal superior',
-    'Retroperitoneal',
-    'Pélvica',
-    'Transvaginal',
-    'Obstetricia',
-    'Renal y vejiga',
-    'Vejiga y próstata',
-    'Transrectal',
-    'De pulmones',
-    'Ecografía de partes blandas',
-    'Transfontanelar',
-    'Tejidos blandos de cuero cabelludo',
-    'Tejidos blandos de cuello',
-    'De tiroides',
-    'De mamas',
-    'Tejidos blandos de tórax',
-    'Tejidos blandos de abdomen',
-    'Tejidos blandos de pelvis',
-    'Testicular',
-    'Histerosonografía',
-    'De hernia umbilical',
-    'De hernia inguinal',
-    'De hernia inguinal bilateral',
-    'Eventración',
-    'Partes blandas tumoraciones-colecciones',
-    'Doppler carotídeo',
-    'Doppler ABC. SUP',
-    'Doppler renal',
-    'Doppler prostático',
-    'Doppler testicular',
-    'Doppler ginecología',
-    'Doppler obstétrico',
-    'Doppler ART M.SUP',
-    'Doppler ART. M. SUP. BILATERAL',
-    'Doppler ART. M. INF',
-    'Doppler ART. M. INF. BILATERAL',
-    'Doppler venoso M.SUP',
-    'Doppler venoso M. SUP. BILATERAL',
-    'Doppler venoso M. INF',
-    'Doppler venoso M. INF. BILATERAL'
-];
+$ecografias = [];
 
-$condiciones = [
-    'Asegurado',
-    'Contado',
-    'Convenios',
-    'Crédito',
-    'Essalud',
-    'Exonerado parcial',
-    'Exonerado total',
-    'Ley de emergencia',
-    'No asegurado',
-    'Pago parcial',
-    'Particular',
-    'Referido',
-    'SIS'
-];
+$consultaExamenes = $conexion->query("
+    SELECT id, nombre 
+    FROM mantenimiento 
+    WHERE tipo = 'Examen'
+    ORDER BY nombre ASC
+");
+
+while ($filaExamen = $consultaExamenes->fetch_assoc()) {
+    $ecografias[] = $filaExamen;
+}
+
+$condiciones = [];
+
+$consultaCondiciones = $conexion->query("
+    SELECT id, nombre 
+    FROM mantenimiento 
+    WHERE tipo = 'Condición de pago'
+    ORDER BY nombre ASC
+");
+
+while ($filaCondicion = $consultaCondiciones->fetch_assoc()) {
+    $condiciones[] = $filaCondicion;
+}
 
 $meses = [
     1 => 'ENERO',
@@ -422,10 +389,16 @@ $totalGeneral = 0;
 
 foreach ($ecografias as $eco) {
 
+    $id_examen = $eco['id'];
+    $nombre_examen = $eco['nombre'];
+
     $totalEcografia = 0;
     $filas = [];
 
     foreach ($condiciones as $condicion) {
+
+        $id_condicion = $condicion['id'];
+        $nombre_condicion = $condicion['nombre'];
 
         $totalCondicion = 0;
         $celdasDias = "";
@@ -435,14 +408,14 @@ foreach ($ecografias as $eco) {
             $fecha = sprintf('%04d-%02d-%02d', $anio, $mes, $d);
 
             $stmt = $conexion->prepare("
-                SELECT COUNT(*) AS total
-                FROM ecografias
-                WHERE examen_solicitado = ?
-                AND condicion = ?
-                AND DATE(fecha) = ?
-            ");
+    SELECT COUNT(*) AS total
+    FROM ecografias
+    WHERE id_examen = ?
+    AND id_condicion = ?
+    AND DATE(fecha) = ?
+");
 
-            $stmt->bind_param("sss", $eco, $condicion, $fecha);
+            $stmt->bind_param("iis", $id_examen, $id_condicion, $fecha);
             $stmt->execute();
 
             $resultado = $stmt->get_result();
@@ -459,7 +432,7 @@ foreach ($ecografias as $eco) {
         }
 
         $filas[] = [
-            'condicion' => $condicion,
+            'condicion' => $nombre_condicion,
             'dias' => $celdasDias,
             'total_condicion' => $totalCondicion
         ];
@@ -472,7 +445,7 @@ foreach ($ecografias as $eco) {
         echo "<tr>";
 
         if ($primeraFila) {
-            echo "<td class='ecografia' rowspan='" . count($condiciones) . "'>$eco</td>";
+            echo "<td class='ecografia' rowspan='" . count($condiciones) . "'>$nombre_examen</td>";
         }
 
         echo "<td class='condicion'>" . $filaReporte['condicion'] . "</td>";

@@ -17,37 +17,18 @@ if ($mes < 1 || $mes > 12) {
 
 $diasMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
 
-$servicios = [
-    'Cardiología',
-    'Cirugía',
-    'Consultorio externo',
-    'COVID-19',
-    'Dengue',
-    'Emergencia',
-    'Endocrinología',
-    'Gastroenterología',
-    'Ginecología',
-    'Infectología',
-    'Medicina',
-    'Medicina física y rehabilitación',
-    'Nefrología',
-    'Neonatología',
-    'Neumología',
-    'Neurología',
-    'Obstetricia',
-    'Oncología',
-    'Otorrinolaringología',
-    'Pediatría',
-    'Psiquiatría',
-    'Reumatología',
-    'Shock trauma',
-    'Traumatología',
-    'UCIN',
-    'Urología',
-    'UVI',
-    'UVICLIN',
-    'Vésico prostático'
-];
+$servicios = [];
+
+$consultaServicios = $conexion->query("
+    SELECT nombre 
+    FROM mantenimiento 
+    WHERE tipo = 'Servicio'
+    ORDER BY nombre ASC
+");
+
+while ($filaServicio = $consultaServicios->fetch_assoc()) {
+    $servicios[] = $filaServicio['nombre'];
+}
 
 $tipos_atencion = [
     'Particular',

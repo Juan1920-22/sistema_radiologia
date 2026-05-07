@@ -12,7 +12,6 @@ $condicionesLista = $conexion->query("SELECT * FROM mantenimiento WHERE tipo='Co
 $serviciosLista = $conexion->query("SELECT * FROM mantenimiento WHERE tipo='Servicio' ORDER BY id DESC");
 $examenesLista = $conexion->query("SELECT * FROM mantenimiento WHERE tipo='Examen' ORDER BY id DESC");
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -408,7 +407,7 @@ h2 {
         <a href="menu.php">Inicio</a>
         <a href="registrar_ecografia.php">Registrar</a>
         <a href="historial_ecografias.php">Historial</a>
-        <a href="reportes">reportes</a>
+        <a href="reportes.php">reportes</a>
         <a href="mantenimiento.php">Mantenimiento</a>
         <a href="logout.php" class="btn-salir-top">Salir</a>
     </nav>

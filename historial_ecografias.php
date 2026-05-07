@@ -33,19 +33,19 @@ if (!empty($medico_turno)) {
 }
 
 if (!empty($servicio_solicitante)) {
-    $where[] = "servicio_solicitante = '$servicio_solicitante'";
+    $where[] = "e.id_servicio = '$servicio_solicitante'";
 }
 
 if (!empty($condicion)) {
-    $where[] = "condicion = '$condicion'";
+    $where[] = "e.id_condicion = '$condicion'";
 }
 
 if (!empty($tipo_atencion)) {
-    $where[] = "tipo_atencion = '$tipo_atencion'";
+    $where[] = "e.tipo_atencion = '$tipo_atencion'";
 }
 
 if (!empty($examen_solicitado)) {
-    $where[] = "examen_solicitado = '$examen_solicitado'";
+    $where[] = "e.id_examen = '$examen_solicitado'";
 }
 
 $where_sql = "";
@@ -54,10 +54,22 @@ if (count($where) > 0) {
     $where_sql = "WHERE " . implode(" AND ", $where);
 }
 
-$sql = "SELECT * FROM ecografias $where_sql ORDER BY fecha DESC";
+$sql = "SELECT 
+            e.*,
+            c.nombre AS condicion_nombre,
+            s.nombre AS servicio_nombre,
+            ex.nombre AS examen_nombre
+        FROM ecografias e
+        LEFT JOIN mantenimiento c ON e.id_condicion = c.id
+        LEFT JOIN mantenimiento s ON e.id_servicio = s.id
+        LEFT JOIN mantenimiento ex ON e.id_examen = ex.id
+        $where_sql 
+        ORDER BY e.fecha DESC";
 $resultado = mysqli_query($conexion, $sql);
 $total_registros = $resultado->num_rows;
-$sql_total_monto = "SELECT SUM(monto) AS total_monto FROM ecografias $where_sql";
+$sql_total_monto = "SELECT SUM(e.monto) AS total_monto 
+                    FROM ecografias e 
+                    $where_sql";
 $resultado_monto = mysqli_query($conexion, $sql_total_monto);
 $fila_monto = mysqli_fetch_assoc($resultado_monto);
 
@@ -443,15 +455,24 @@ th {
         </div>
 
         <div class="campo">
-            <label>Condición:</label>
-            <select name="condicion">
-                <option value="">Todas</option>
-                <option <?php if($condicion=="Asegurado") echo "selected"; ?>>Asegurado</option>
-                <option <?php if($condicion=="No asegurado") echo "selected"; ?>>No asegurado</option>
-                <option <?php if($condicion=="Referido") echo "selected"; ?>>Referido</option>
-                <option <?php if($condicion=="Particular") echo "selected"; ?>>Particular</option>
-            </select>
-        </div>
+    <label>Condición:</label>
+    <select name="condicion">
+        <option value="">Todas</option>
+        <?php
+        $condicionesFiltro = $conexion->query("
+            SELECT id, nombre 
+            FROM mantenimiento 
+            WHERE tipo = 'Condición de pago'
+            ORDER BY nombre ASC
+        ");
+
+        while ($con = $condicionesFiltro->fetch_assoc()) {
+            $selected = ($condicion == $con['id']) ? 'selected' : '';
+            echo "<option value='" . $con['id'] . "' $selected>" . $con['nombre'] . "</option>";
+        }
+        ?>
+    </select>
+</div>
 
         <div class="campo">
             <label>Tipo de atención:</label>
@@ -466,51 +487,24 @@ th {
         </div>
 
         <div class="campo">
-            <label>Examen solicitado:</label>
-            <select name="examen_solicitado">
-                <option value="">Todos los exámenes</option>
-                <option <?php if($examen_solicitado=="Abdominal superior") echo "selected"; ?>>Abdominal superior</option>
-                <option <?php if($examen_solicitado=="Retroperitoneal") echo "selected"; ?>>Retroperitoneal</option>
-                <option <?php if($examen_solicitado=="Pélvica") echo "selected"; ?>>Pélvica</option>
-                <option <?php if($examen_solicitado=="Transvaginal") echo "selected"; ?>>Transvaginal</option>
-                <option <?php if($examen_solicitado=="Obstetricia") echo "selected"; ?>>Obstetricia</option>
-                <option <?php if($examen_solicitado=="Renal y vejiga") echo "selected"; ?>>Renal y vejiga</option>
-                <option <?php if($examen_solicitado=="Vejiga y próstata") echo "selected"; ?>>Vejiga y próstata</option>
-                <option <?php if($examen_solicitado=="Transrectal") echo "selected"; ?>>Transrectal</option>
-                <option <?php if($examen_solicitado=="De pulmones") echo "selected"; ?>>De pulmones</option>
-                <option <?php if($examen_solicitado=="Ecografía de partes blandas") echo "selected"; ?>>Ecografía de partes blandas</option>
-                <option <?php if($examen_solicitado=="Transfontanelar") echo "selected"; ?>>Transfontanelar</option>
-                <option <?php if($examen_solicitado=="Tejidos blandos de cuero cabelludo") echo "selected"; ?>>Tejidos blandos de cuero cabelludo</option>
-                <option <?php if($examen_solicitado=="Tejidos blandos de cuello") echo "selected"; ?>>Tejidos blandos de cuello</option>
-                <option <?php if($examen_solicitado=="De tiroides") echo "selected"; ?>>De tiroides</option>
-                <option <?php if($examen_solicitado=="De mamas") echo "selected"; ?>>De mamas</option>
-                <option <?php if($examen_solicitado=="Tejidos blandos de tórax") echo "selected"; ?>>Tejidos blandos de tórax</option>
-                <option <?php if($examen_solicitado=="Tejidos blandos de abdomen") echo "selected"; ?>>Tejidos blandos de abdomen</option>
-                <option <?php if($examen_solicitado=="Tejidos blandos de pelvis") echo "selected"; ?>>Tejidos blandos de pelvis</option>
-                <option <?php if($examen_solicitado=="Testicular") echo "selected"; ?>>Testicular</option>
-                <option <?php if($examen_solicitado=="Histerosonografía") echo "selected"; ?>>Histerosonografía</option>
-                <option <?php if($examen_solicitado=="De hernia umbilical") echo "selected"; ?>>De hernia umbilical</option>
-                <option <?php if($examen_solicitado=="De hernia inguinal") echo "selected"; ?>>De hernia inguinal</option>
-                <option <?php if($examen_solicitado=="De hernia inguinal bilateral") echo "selected"; ?>>De hernia inguinal bilateral</option>
-                <option <?php if($examen_solicitado=="Eventración") echo "selected"; ?>>Eventración</option>
-                <option <?php if($examen_solicitado=="Partes blandas tumoraciones-colecciones") echo "selected"; ?>>Partes blandas tumoraciones-colecciones</option>
-                <option <?php if($examen_solicitado=="Doppler carotídeo") echo "selected"; ?>>Doppler carotídeo</option>
-                <option <?php if($examen_solicitado=="Doppler ABC. SUP") echo "selected"; ?>>Doppler ABC. SUP</option>
-                <option <?php if($examen_solicitado=="Doppler renal") echo "selected"; ?>>Doppler renal</option>
-                <option <?php if($examen_solicitado=="Doppler prostático") echo "selected"; ?>>Doppler prostático</option>
-                <option <?php if($examen_solicitado=="Doppler testicular") echo "selected"; ?>>Doppler testicular</option>
-                <option <?php if($examen_solicitado=="Doppler ginecología") echo "selected"; ?>>Doppler ginecología</option>
-                <option <?php if($examen_solicitado=="Doppler obstétrico") echo "selected"; ?>>Doppler obstétrico</option>
-                <option <?php if($examen_solicitado=="Doppler ART M.SUP") echo "selected"; ?>>Doppler ART M.SUP</option>
-                <option <?php if($examen_solicitado=="Doppler ART. M. SUP. BILATERAL") echo "selected"; ?>>Doppler ART. M. SUP. BILATERAL</option>
-                <option <?php if($examen_solicitado=="Doppler ART. M. INF") echo "selected"; ?>>Doppler ART. M. INF</option>
-                <option <?php if($examen_solicitado=="Doppler ART. M. INF. BILATERAL") echo "selected"; ?>>Doppler ART. M. INF. BILATERAL</option>
-                <option <?php if($examen_solicitado=="Doppler venoso M.SUP") echo "selected"; ?>>Doppler venoso M.SUP</option>
-                <option <?php if($examen_solicitado=="Doppler venoso M. SUP. BILATERAL") echo "selected"; ?>>Doppler venoso M. SUP. BILATERAL</option>
-                <option <?php if($examen_solicitado=="Doppler venoso M. INF") echo "selected"; ?>>Doppler venoso M. INF</option>
-                <option <?php if($examen_solicitado=="Doppler venoso M. INF. BILATERAL") echo "selected"; ?>>Doppler venoso M. INF. BILATERAL</option>
-            </select>
-        </div>
+    <label>Examen solicitado:</label>
+    <select name="examen_solicitado">
+        <option value="">Todos los exámenes</option>
+        <?php
+        $examenesFiltro = $conexion->query("
+            SELECT id, nombre 
+            FROM mantenimiento 
+            WHERE tipo = 'Examen'
+            ORDER BY nombre ASC
+        ");
+
+        while ($ex = $examenesFiltro->fetch_assoc()) {
+            $selected = ($examen_solicitado == $ex['id']) ? 'selected' : '';
+            echo "<option value='" . $ex['id'] . "' $selected>" . $ex['nombre'] . "</option>";
+        }
+        ?>
+    </select>
+</div>
 
         <div class="acciones filtros-botones">
             <button type="button" id="btnPDF" class="btn export">Descargar PDF</button>
@@ -561,8 +555,8 @@ Monto total: S/ <?php echo number_format($total_monto, 2); ?>
                             <td><?php echo $fila['fecha']; ?></td>
                             <td><?php echo $fila['apellidos'] . " " . $fila['nombres']; ?></td>
                             <td><?php echo $fila['sexo']; ?></td>
-                            <td><?php echo $fila['condicion']; ?></td>
-                            <td><?php echo $fila['servicio_solicitante']; ?></td>
+                            <td><?php echo $fila['condicion_nombre']; ?></td>
+                            <td><?php echo $fila['servicio_nombre']; ?></td>
                             <td><?php echo $fila['medico_turno']; ?></td>
                             <td><?php echo $fila['tipo_atencion']; ?></td>
                             <td><?php echo $fila['examen_solicitado']; ?></td>
