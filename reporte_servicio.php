@@ -20,14 +20,14 @@ $diasMes = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
 $servicios = [];
 
 $consultaServicios = $conexion->query("
-    SELECT nombre 
+    SELECT id, nombre 
     FROM mantenimiento 
     WHERE tipo = 'Servicio'
     ORDER BY nombre ASC
 ");
 
 while ($filaServicio = $consultaServicios->fetch_assoc()) {
-    $servicios[] = $filaServicio['nombre'];
+    $servicios[] = $filaServicio;
 }
 
 $tipos_atencion = [
@@ -398,6 +398,8 @@ $totalesTipos = [
     'Hospitalaria' => 0
 ];
                 foreach ($servicios as $servicio) {
+                $id_servicio = $servicio['id'];
+                $nombre_servicio = $servicio['nombre'];
 
                     $totalServicio = 0;
                     $filas = [];
@@ -411,14 +413,14 @@ $totalesTipos = [
                             $fecha = sprintf('%04d-%02d-%02d', $anio, $mes, $d);
 
                             $stmt = $conexion->prepare("
-                                SELECT COUNT(*) AS total
-                                FROM ecografias
-                                WHERE servicio_solicitante = ?
-                                AND tipo_atencion = ?
-                                AND DATE(fecha) = ?
-                            ");
+    SELECT COUNT(*) AS total
+    FROM ecografias
+    WHERE id_servicio = ?
+    AND tipo_atencion = ?
+    AND DATE(fecha) = ?
+");
 
-                            $stmt->bind_param("sss", $servicio, $tipo, $fecha);
+                            $stmt->bind_param("iss", $id_servicio, $tipo, $fecha);
                             $stmt->execute();
 
                             $resultado = $stmt->get_result();
@@ -449,7 +451,7 @@ $totalesTipos = [
                         echo "<tr>";
 
                         if ($primeraFila) {
-                            echo "<td class='servicio' rowspan='" . count($tipos_atencion) . "'>$servicio</td>";
+                            echo "<td class='servicio' rowspan='" . count($tipos_atencion) . "'>$nombre_servicio</td>";
                         }
 
                         echo "<td class='tipo'>" . $filaReporte['tipo'] . "</td>";

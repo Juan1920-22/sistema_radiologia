@@ -7,15 +7,37 @@ $fecha = $_POST['fecha'];
 $apellidos = $_POST['apellidos'];
 $nombres = $_POST['nombres'];
 $sexo = $_POST['sexo'];
-$condicion = $_POST['condicion'];
-$servicio_solicitante = $_POST['servicio_solicitante'];
+
+$id_condicion = $_POST['condicion'];
+$id_servicio = $_POST['servicio_solicitante'];
+$id_examen = $_POST['examen_solicitado'];
+
 $medico_turno = $_POST['medico_turno'];
-$examen_solicitado = $_POST['examen_solicitado'];
 $tipo_atencion = $_POST['tipo_atencion'];
 $diagnostico = $_POST['diagnostico'];
 $monto = $_POST['monto'] ?? null;
 $numero_boleta = $_POST['numero_boleta'] ?? null;
 $convenio = $_POST['convenio'] ?? null;
+
+/* Obtener nombres desde mantenimiento */
+$condicion = '';
+$servicio_solicitante = '';
+$examen_solicitado = '';
+
+$res = $conexion->query("SELECT nombre FROM mantenimiento WHERE id = '$id_condicion'");
+if ($row = $res->fetch_assoc()) {
+    $condicion = $row['nombre'];
+}
+
+$res = $conexion->query("SELECT nombre FROM mantenimiento WHERE id = '$id_servicio'");
+if ($row = $res->fetch_assoc()) {
+    $servicio_solicitante = $row['nombre'];
+}
+
+$res = $conexion->query("SELECT nombre FROM mantenimiento WHERE id = '$id_examen'");
+if ($row = $res->fetch_assoc()) {
+    $examen_solicitado = $row['nombre'];
+}
 
 $sql = "INSERT INTO ecografias (
     historia_clinica,
@@ -33,6 +55,9 @@ $sql = "INSERT INTO ecografias (
     monto,
     numero_boleta,
     convenio,
+    id_condicion,
+    id_servicio,
+    id_examen,
     fecha_registro
 ) VALUES (
     '$historia_clinica',
@@ -50,6 +75,9 @@ $sql = "INSERT INTO ecografias (
     '$monto',
     '$numero_boleta',
     '$convenio',
+    '$id_condicion',
+    '$id_servicio',
+    '$id_examen',
     NOW()
 )";
 
@@ -57,7 +85,7 @@ if ($conexion->query($sql) === TRUE) {
     header("Location: registrar_ecografia.php?mensaje=ok");
     exit();
 } else {
-   header("Location: registrar_ecografia.php?mensaje=error");
-exit();
+    header("Location: registrar_ecografia.php?mensaje=error");
+    exit();
 }
 ?>

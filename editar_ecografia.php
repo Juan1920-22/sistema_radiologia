@@ -1,8 +1,8 @@
 <?php
 include("conexion.php");
-$condiciones = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Condición de pago' AND estado=1 ORDER BY nombre ASC");
-$servicios = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Servicio' AND estado=1 ORDER BY nombre ASC");
-$examenes = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Examen' AND estado=1 ORDER BY nombre ASC");
+$condiciones = $conexion->query("SELECT id, nombre FROM mantenimiento WHERE tipo='Condición de pago' AND estado=1 ORDER BY nombre ASC");
+$servicios = $conexion->query("SELECT id, nombre FROM mantenimiento WHERE tipo='Servicio' AND estado=1 ORDER BY nombre ASC");
+$examenes = $conexion->query("SELECT id, nombre FROM mantenimiento WHERE tipo='Examen' AND estado=1 ORDER BY nombre ASC");
 
 $id = $_GET['id'];
 
@@ -138,72 +138,50 @@ textarea {
     </div>
 
     <div class="campo">
-        <label>Condición:</label>
-        <select name="condicion" required>
-            <option <?php if($fila['condicion']=="Asegurado") echo "selected"; ?>>Asegurado</option>
-            <option <?php if($fila['condicion']=="No asegurado") echo "selected"; ?>>No asegurado</option>
-            <option <?php if($fila['condicion']=="Referido") echo "selected"; ?>>Referido</option>
-            <option <?php if($fila['condicion']=="Particular") echo "selected"; ?>>Particular</option>
-            <option <?php if($fila['condicion']=="SIS") echo "selected"; ?>>SIS</option>
-            <option <?php if($fila['condicion']=="Essalud") echo "selected"; ?>>Essalud</option>
-            <option <?php if($fila['condicion']=="Convenios") echo "selected"; ?>>Convenios</option>
-            <option <?php if($fila['condicion']=="Contado") echo "selected"; ?>>Contado</option>
-            <option <?php if($fila['condicion']=="Exonerado Parcial") echo "selected"; ?>>Exonerado Parcial</option>
-            <option <?php if($fila['condicion']=="Exonerado Total") echo "selected"; ?>>Exonerado Total</option>
-            <option <?php if($fila['condicion']=="Ley de emergencia") echo "selected"; ?>>Ley de emergencia</option>
-            <option <?php if($fila['condicion']=="Pago parcial") echo "selected"; ?>>Pago parcial</option>
-            <option <?php if($fila['condicion']=="Credito") echo "selected"; ?>>Credito</option>
+    <label>Condición:</label>
 
+    <select name="condicion" required>
 
-    <?php while($c = $condiciones->fetch_assoc()) { ?>
-        <option value="<?php echo $c['nombre']; ?>" 
-            <?php if($fila['condicion'] == $c['nombre']) echo "selected"; ?>>
-            <?php echo $c['nombre']; ?>
-        </option>
-    <?php } ?>
-</select>
-    </div>
+        <?php while($c = $condiciones->fetch_assoc()) { ?>
+
+            <option 
+                value="<?php echo $c['id']; ?>"
+                data-nombre="<?php echo $c['nombre']; ?>"
+
+                <?php 
+                if($fila['id_condicion'] == $c['id']) 
+                    echo "selected"; 
+                ?>
+            >
+                <?php echo $c['nombre']; ?>
+            </option>
+
+        <?php } ?>
+
+    </select>
+</div>
 
     <div class="campo">
-        <label>Servicio solicitante:</label>
-<select name="servicio_solicitante" required>
-    <option>Seleccione</option>
+    <label>Servicio solicitante:</label>
 
-<option <?php if($fila['servicio_solicitante']=="Cardiología") echo "selected"; ?>>Cardiología</option>
-<option <?php if($fila['servicio_solicitante']=="Cirugía") echo "selected"; ?>>Cirugía</option>
-<option <?php if($fila['servicio_solicitante']=="Consultorio externo") echo "selected"; ?>>Consultorio externo</option>
-<option <?php if($fila['servicio_solicitante']=="COVID-19") echo "selected"; ?>>COVID-19</option>
-<option <?php if($fila['servicio_solicitante']=="Dengue") echo "selected"; ?>>Dengue</option>
-<option <?php if($fila['servicio_solicitante']=="Emergencia") echo "selected"; ?>>Emergencia</option>
-<option <?php if($fila['servicio_solicitante']=="Endocrinología") echo "selected"; ?>>Endocrinología</option>
-<option <?php if($fila['servicio_solicitante']=="Gastroenterología") echo "selected"; ?>>Gastroenterología</option>
-<option <?php if($fila['servicio_solicitante']=="Ginecología") echo "selected"; ?>>Ginecología</option>
-<option <?php if($fila['servicio_solicitante']=="Infectología") echo "selected"; ?>>Infectología</option>
-<option <?php if($fila['servicio_solicitante']=="Medicina") echo "selected"; ?>>Medicina</option>
-<option <?php if($fila['servicio_solicitante']=="Medicina física y rehabilitación") echo "selected"; ?>>Medicina física y rehabilitación</option>
-<option <?php if($fila['servicio_solicitante']=="Nefrología") echo "selected"; ?>>Nefrología</option>
-<option <?php if($fila['servicio_solicitante']=="Neonatología") echo "selected"; ?>>Neonatología</option>
-<option <?php if($fila['servicio_solicitante']=="Neumología") echo "selected"; ?>>Neumología</option>
-<option <?php if($fila['servicio_solicitante']=="Neurología") echo "selected"; ?>>Neurología</option>
-<option <?php if($fila['servicio_solicitante']=="Obstetricia") echo "selected"; ?>>Obstetricia</option>
-<option <?php if($fila['servicio_solicitante']=="Oncología") echo "selected"; ?>>Oncología</option>
-<option <?php if($fila['servicio_solicitante']=="Otorrinolaringología") echo "selected"; ?>>Otorrinolaringología</option>
-<option <?php if($fila['servicio_solicitante']=="Pediatría") echo "selected"; ?>>Pediatría</option>
-<option <?php if($fila['servicio_solicitante']=="Psiquiatría") echo "selected"; ?>>Psiquiatría</option>
-<option <?php if($fila['servicio_solicitante']=="Reumatología") echo "selected"; ?>>Reumatología</option>
-<option <?php if($fila['servicio_solicitante']=="Shock trauma") echo "selected"; ?>>Shock trauma</option>
-<option <?php if($fila['servicio_solicitante']=="Traumatología") echo "selected"; ?>>Traumatología</option>
-<option <?php if($fila['servicio_solicitante']=="UCIN") echo "selected"; ?>>UCIN</option>
-<option <?php if($fila['servicio_solicitante']=="Urología") echo "selected"; ?>>Urología</option>
-<option <?php if($fila['servicio_solicitante']=="UVI") echo "selected"; ?>>UVI</option>
-<option <?php if($fila['servicio_solicitante']=="UVICLIN") echo "selected"; ?>>UVICLIN</option>
-<option <?php if($fila['servicio_solicitante']=="Vésico prostático") echo "selected"; ?>>Vésico prostático</option> <?php while($s = $servicios->fetch_assoc()) { ?>
-<option value="<?php echo $s['nombre']; ?>" <?php if($fila['servicio_solicitante'] == $s['nombre']) echo "selected"; ?>>
-        <?php echo $s['nombre']; ?>
-        </option>
-    <?php } ?>
-</select>
-    </div>
+    <select name="servicio_solicitante" required>
+
+        <?php while($s = $servicios->fetch_assoc()) { ?>
+
+            <option 
+                value="<?php echo $s['id']; ?>"
+                <?php 
+                if($fila['id_servicio'] == $s['id']) 
+                    echo "selected"; 
+                ?>
+            >
+                <?php echo $s['nombre']; ?>
+            </option>
+
+        <?php } ?>
+
+    </select>
+</div>
 
 <div class="campo">
 <label>Médico turno:</label>
@@ -235,61 +213,26 @@ textarea {
 
 <div class="campo">
     <label>Examen solicitado:</label>
-        <select name="examen_solicitado" required>
-    <option>Seleccione</option>
 
-<option value="">Seleccione</option>
+    <select name="examen_solicitado" required>
 
-<option <?php if($fila['examen_solicitado']=="Abdominal superior") echo "selected"; ?>>Abdominal superior</option>
-<option <?php if($fila['examen_solicitado']=="Retroperitoneal") echo "selected"; ?>>Retroperitoneal</option>
-<option <?php if($fila['examen_solicitado']=="Pélvica") echo "selected"; ?>>Pélvica</option>
-<option <?php if($fila['examen_solicitado']=="Transvaginal") echo "selected"; ?>>Transvaginal</option>
-<option <?php if($fila['examen_solicitado']=="Obstetricia") echo "selected"; ?>>Obstetricia</option>
-<option <?php if($fila['examen_solicitado']=="Renal y vejiga") echo "selected"; ?>>Renal y vejiga</option>
-<option <?php if($fila['examen_solicitado']=="Vejiga y próstata") echo "selected"; ?>>Vejiga y próstata</option>
-<option <?php if($fila['examen_solicitado']=="Transrectal") echo "selected"; ?>>Transrectal</option>
-<option <?php if($fila['examen_solicitado']=="De pulmones") echo "selected"; ?>>De pulmones</option>
-<option <?php if($fila['examen_solicitado']=="Ecografía de partes blandas") echo "selected"; ?>>Ecografía de partes blandas</option>
-<option <?php if($fila['examen_solicitado']=="Transfontanelar") echo "selected"; ?>>Transfontanelar</option>
-<option <?php if($fila['examen_solicitado']=="Tejidos blandos de cuero cabelludo") echo "selected"; ?>>Tejidos blandos de cuero cabelludo</option>
-<option <?php if($fila['examen_solicitado']=="Tejidos blandos de cuello") echo "selected"; ?>>Tejidos blandos de cuello</option>
-<option <?php if($fila['examen_solicitado']=="De tiroides") echo "selected"; ?>>De tiroides</option>
-<option <?php if($fila['examen_solicitado']=="De mamas") echo "selected"; ?>>De mamas</option>
-<option <?php if($fila['examen_solicitado']=="Tejidos blandos de tórax") echo "selected"; ?>>Tejidos blandos de tórax</option>
-<option <?php if($fila['examen_solicitado']=="Tejidos blandos de abdomen") echo "selected"; ?>>Tejidos blandos de abdomen</option>
-<option <?php if($fila['examen_solicitado']=="Tejidos blandos de pelvis") echo "selected"; ?>>Tejidos blandos de pelvis</option>
-<option <?php if($fila['examen_solicitado']=="Testicular") echo "selected"; ?>>Testicular</option>
-<option <?php if($fila['examen_solicitado']=="Histerosonografía") echo "selected"; ?>>Histerosonografía</option>
-<option <?php if($fila['examen_solicitado']=="De hernia umbilical") echo "selected"; ?>>De hernia umbilical</option>
-<option <?php if($fila['examen_solicitado']=="De hernia inguinal") echo "selected"; ?>>De hernia inguinal</option>
-<option <?php if($fila['examen_solicitado']=="De hernia inguinal bilateral") echo "selected"; ?>>De hernia inguinal bilateral</option>
-<option <?php if($fila['examen_solicitado']=="Eventración") echo "selected"; ?>>Eventración</option>
-<option <?php if($fila['examen_solicitado']=="Partes blandas tumoraciones-colecciones") echo "selected"; ?>>Partes blandas tumoraciones-colecciones</option>
-<option <?php if($fila['examen_solicitado']=="Doppler carotídeo") echo "selected"; ?>>Doppler carotídeo</option>
-<option <?php if($fila['examen_solicitado']=="Doppler ABC. SUP") echo "selected"; ?>>Doppler ABC. SUP</option>
-<option <?php if($fila['examen_solicitado']=="Doppler renal") echo "selected"; ?>>Doppler renal</option>
-<option <?php if($fila['examen_solicitado']=="Doppler prostático") echo "selected"; ?>>Doppler prostático</option>
-<option <?php if($fila['examen_solicitado']=="Doppler testicular") echo "selected"; ?>>Doppler testicular</option>
-<option <?php if($fila['examen_solicitado']=="Doppler ginecología") echo "selected"; ?>>Doppler ginecología</option>
-<option <?php if($fila['examen_solicitado']=="Doppler obstétrico") echo "selected"; ?>>Doppler obstétrico</option>
-<option <?php if($fila['examen_solicitado']=="Doppler ART M.SUP") echo "selected"; ?>>Doppler ART M.SUP</option>
-<option <?php if($fila['examen_solicitado']=="Doppler ART. M. SUP. BILATERAL") echo "selected"; ?>>Doppler ART. M. SUP. BILATERAL</option>
-<option <?php if($fila['examen_solicitado']=="Doppler ART. M. INF") echo "selected"; ?>>Doppler ART. M. INF</option>
-<option <?php if($fila['examen_solicitado']=="Doppler ART. M. INF. BILATERAL") echo "selected"; ?>>Doppler ART. M. INF. BILATERAL</option>
-<option <?php if($fila['examen_solicitado']=="Doppler venoso M.SUP") echo "selected"; ?>>Doppler venoso M.SUP</option>
-<option <?php if($fila['examen_solicitado']=="Doppler venoso M. SUP. BILATERAL") echo "selected"; ?>>Doppler venoso M. SUP. BILATERAL</option>
-<option <?php if($fila['examen_solicitado']=="Doppler venoso M. INF") echo "selected"; ?>>Doppler venoso M. INF</option>
-<option <?php if($fila['examen_solicitado']=="Doppler venoso M. INF. BILATERAL") echo "selected"; ?>>Doppler venoso M. INF. BILATERAL</option>
+        <?php while($e = $examenes->fetch_assoc()) { ?>
 
- <?php while($e = $examenes->fetch_assoc()) { ?>
-        <option value="<?php echo $e['nombre']; ?>" 
-        <?php if($fila['examen_solicitado'] == $e['nombre']) echo "selected"; ?>>
-        <?php echo $e['nombre']; ?>
-        </option>
-    <?php } ?>
+            <option 
+                value="<?php echo $e['id']; ?>"
 
-</select>
-    </div>
+                <?php 
+                if($fila['id_examen'] == $e['id']) 
+                    echo "selected"; 
+                ?>
+            >
+                <?php echo $e['nombre']; ?>
+            </option>
+
+        <?php } ?>
+
+    </select>
+</div>
 
     <div class="campo">
         <label>Diagnóstico:</label>

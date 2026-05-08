@@ -7,10 +7,20 @@ if (!isset($_SESSION['usuario'])) {
 }
 
 include("conexion.php");
+$examenes = $conexion->query("
+    SELECT id, nombre 
+    FROM mantenimiento 
+    WHERE tipo='Examen' AND estado=1 
+    ORDER BY nombre ASC
+");
 
 /* GUARDAR */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
-    $examen = trim($_POST['examen_solicitado']);
+    $id_examen = $_POST['id_examen'];
+
+$res = $conexion->query("SELECT nombre FROM mantenimiento WHERE id='$id_examen'");
+$row = $res->fetch_assoc();
+$examen = $row['nombre'];
     $codigo = trim($_POST['codigo_cpt']);
     $co_codups = trim($_POST['co_codups']);
     $servicio = trim($_POST['servicio_especialidad']);
@@ -18,10 +28,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
     if ($examen != "" && $codigo != "") {
         $stmt = $conexion->prepare("
             INSERT INTO cpt_codes 
-            (examen_solicitado, codigo_cpt, co_codups, servicio_especialidad)
-            VALUES (?, ?, ?, ?)
+            (examen_solicitado, id_examen, codigo_cpt, co_codups, servicio_especialidad)
+VALUES (?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("ssss", $examen, $codigo, $co_codups, $servicio);
+        $stmt->bind_param("sisss", $examen, $id_examen, $codigo, $co_codups, $servicio);
         $stmt->execute();
 
         header("Location: mantenimiento_cpt.php?ok=1");
@@ -32,17 +42,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar'])) {
 /* ACTUALIZAR */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
     $id = intval($_POST['id_cpt']);
-    $examen = trim($_POST['examen_solicitado']);
+    $id_examen = $_POST['id_examen'];
+
+$res = $conexion->query("SELECT nombre FROM mantenimiento WHERE id='$id_examen'");
+$row = $res->fetch_assoc();
+$examen = $row['nombre'];
     $codigo = trim($_POST['codigo_cpt']);
     $co_codups = trim($_POST['co_codups']);
     $servicio = trim($_POST['servicio_especialidad']);
 
     $stmt = $conexion->prepare("
         UPDATE cpt_codes
-        SET examen_solicitado = ?, codigo_cpt = ?, co_codups = ?, servicio_especialidad = ?
-        WHERE id_cpt = ?
+SET examen_solicitado = ?, id_examen = ?, codigo_cpt = ?, co_codups = ?, servicio_especialidad = ?
+WHERE id_cpt = ?
     ");
-    $stmt->bind_param("ssssi", $examen, $codigo, $co_codups, $servicio, $id);
+    $stmt->bind_param("sisssi", $examen, $id_examen, $codigo, $co_codups, $servicio, $id);
     $stmt->execute();
 
     header("Location: mantenimiento_cpt.php?editado=1");
@@ -303,15 +317,24 @@ td.examen {
 
         <div class="campo">
             <label>Examen solicitado</label>
-            <input 
-                type="text" 
-                name="examen_solicitado"
-                value="<?php echo $editar ? $editar['examen_solicitado'] : ''; ?>"
-                placeholder="Ej: Abdominal superior"
-                required
-            >
-        </div>
+            <select name="id_examen" required>
+    <option value="">Seleccione examen</option>
 
+    <?php
+    $listaExamenes = $conexion->query("
+        SELECT id, nombre 
+        FROM mantenimiento 
+        WHERE tipo='Examen' AND estado=1 
+        ORDER BY nombre ASC
+    ");
+
+    while($e = $listaExamenes->fetch_assoc()) {
+        $selected = ($editar && $editar['id_examen'] == $e['id']) ? 'selected' : '';
+        echo "<option value='{$e['id']}' $selected>{$e['nombre']}</option>";
+    }
+    ?>
+</select>
+</div>
         <div class="campo">
             <label>Código CPT</label>
             <input 

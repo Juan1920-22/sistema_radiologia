@@ -28,20 +28,22 @@ $meses = [
 
 $sql = "
 SELECT 
-    condicion,
+    c.nombre AS condicion,
     COUNT(*) AS cantidad,
     SUM(
         CASE 
-            WHEN monto IS NULL OR monto = '' 
+            WHEN e.monto IS NULL OR e.monto = '' 
             THEN 0
-            ELSE monto
+            ELSE e.monto
         END
     ) AS total_monto
-FROM ecografias
-WHERE MONTH(fecha) = ?
-AND YEAR(fecha) = ?
-GROUP BY condicion
-ORDER BY condicion ASC
+FROM ecografias e
+LEFT JOIN mantenimiento c 
+    ON e.id_condicion = c.id
+WHERE MONTH(e.fecha) = ?
+AND YEAR(e.fecha) = ?
+GROUP BY e.id_condicion, c.nombre
+ORDER BY c.nombre ASC
 ";
 
 $stmt = $conexion->prepare($sql);

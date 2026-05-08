@@ -559,7 +559,7 @@ Monto total: S/ <?php echo number_format($total_monto, 2); ?>
                             <td><?php echo $fila['servicio_nombre']; ?></td>
                             <td><?php echo $fila['medico_turno']; ?></td>
                             <td><?php echo $fila['tipo_atencion']; ?></td>
-                            <td><?php echo $fila['examen_solicitado']; ?></td>
+                            <td><?php echo $fila['examen_nombre']; ?></td>
                             <td><?php echo $fila['diagnostico']; ?></td>
                             <td><?php 
                             if($fila['monto'] == 0 || $fila['monto'] == '0.00'){

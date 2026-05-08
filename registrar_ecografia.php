@@ -1,9 +1,11 @@
 <?php
 include("conexion.php");
 
-$condiciones = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Condición de pago' AND estado=1 ORDER BY nombre ASC");
-$servicios = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Servicio' AND estado=1 ORDER BY nombre ASC");
-$examenes = $conexion->query("SELECT nombre FROM mantenimiento WHERE tipo='Examen' AND estado=1 ORDER BY nombre ASC");
+$condiciones = $conexion->query("SELECT id, nombre FROM mantenimiento WHERE tipo='Condición de pago' AND estado=1 ORDER BY nombre ASC");
+
+$servicios = $conexion->query("SELECT id, nombre FROM mantenimiento WHERE tipo='Servicio' AND estado=1 ORDER BY nombre ASC");
+
+$examenes = $conexion->query("SELECT id, nombre FROM mantenimiento WHERE tipo='Examen' AND estado=1 ORDER BY nombre ASC");
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -722,7 +724,7 @@ body {
         <option value="">Seleccione o escriba...</option>
 
         <?php while($c = $condiciones->fetch_assoc()) { ?>
-            <option value="<?php echo $c['nombre']; ?>">
+            <option value="<?php echo $c['id']; ?>" data-nombre="<?php echo $c['nombre']; ?>">
                 <?php echo $c['nombre']; ?>
             </option>
         <?php } ?>
@@ -754,7 +756,7 @@ body {
         <option value="">Seleccione o escriba...</option>
 
         <?php while($s = $servicios->fetch_assoc()) { ?>
-            <option value="<?php echo $s['nombre']; ?>">
+            <option value="<?php echo $s['id']; ?>">
                 <?php echo $s['nombre']; ?>
             </option>
         <?php } ?>
@@ -795,7 +797,7 @@ body {
         <option value="">Seleccione o escriba...</option>
 
         <?php while($e = $examenes->fetch_assoc()) { ?>
-            <option value="<?php echo $e['nombre']; ?>">
+            <option value="<?php echo $e['id']; ?>">
                 <?php echo $e['nombre']; ?>
             </option>
         <?php } ?>
@@ -991,7 +993,7 @@ window.onload = function(){
 
 <script>
 function controlarCamposPago() {
-    let condicion = $('[name="condicion"]').val();
+    let condicion = $('[name="condicion"] option:selected').data('nombre');
 
     let campoMonto = document.getElementById("campo_monto");
     let campoBoleta = document.getElementById("campo_boleta");
