@@ -334,11 +334,11 @@ th {
     <div class="campo">
         <label>Año</label>
         <select name="anio">
-            <?php for ($a = 2024; $a <= 2030; $a++) { ?>
-                <option value="<?php echo $a; ?>" <?php if ($a == $anio) echo 'selected'; ?>>
-                    <?php echo $a; ?>
-                </option>
-            <?php } ?>
+            <?php for ($a = 2015; $a <= date('Y'); $a++): ?>
+    <option value="<?= $a ?>" <?= ($anio == $a) ? 'selected' : '' ?>>
+        <?= $a ?>
+    </option>
+<?php endfor; ?>
         </select>
     </div>
 
@@ -412,7 +412,7 @@ foreach ($ecografias as $eco) {
     FROM ecografias
     WHERE id_examen = ?
     AND id_condicion = ?
-    AND DATE(fecha) = ?
+    AND fecha = ?
 ");
 
             $stmt->bind_param("iis", $id_examen, $id_condicion, $fecha);

@@ -27,11 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_meta'])) {
     $stmt->execute();
 
     header("Location: " . strtok($_SERVER["REQUEST_URI"], '?'));
-exit();
+    exit();
 }
 
-$total = $conexion->query("SELECT COUNT(*) as total FROM ecografias")->fetch_assoc();
-$hoy = $conexion->query("SELECT COUNT(*) as total FROM ecografias WHERE DATE(fecha)=CURDATE()")->fetch_assoc();
+$total = $conexion->query("SELECT COUNT(*) AS total FROM ecografias")->fetch_assoc();
+
+$hoy = $conexion->query("
+    SELECT COUNT(*) AS total 
+    FROM ecografias 
+    WHERE fecha >= CURDATE() 
+    AND fecha < CURDATE() + INTERVAL 1 DAY
+")->fetch_assoc();
+
 /* Obtener meta del día */
 $stmtMeta = $conexion->prepare("SELECT meta FROM metas_diarias WHERE fecha = ?");
 $stmtMeta->bind_param("s", $fechaHoy);
@@ -40,7 +47,6 @@ $resultMeta = $stmtMeta->get_result();
 $metaData = $resultMeta->fetch_assoc();
 
 $meta_diaria = $metaData ? intval($metaData['meta']) : 0;
-
 $realizadas_hoy = intval($hoy['total']);
 
 if ($meta_diaria > 0) {
@@ -59,6 +65,8 @@ if ($meta_diaria > 0) {
     $faltantes = 0;
     $porcentaje = 0;
 }
+
+/* FILTROS DASHBOARD */
 $filtro_dashboard = isset($_GET['filtro_dashboard']) ? $_GET['filtro_dashboard'] : 'dia';
 $fecha_dashboard = isset($_GET['fecha_dashboard']) ? $_GET['fecha_dashboard'] : date('Y-m-d');
 
@@ -68,12 +76,20 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_dashboard)) {
 
 $fecha_segura = $conexion->real_escape_string($fecha_dashboard);
 
+/* Año para gráfico y filtro histórico */
+$anio_dashboard = isset($_GET['anio_dashboard']) ? (int)$_GET['anio_dashboard'] : (int)date('Y');
+
+if ($anio_dashboard < 2015 || $anio_dashboard > (int)date('Y')) {
+    $anio_dashboard = (int)date('Y');
+}
+
 $whereDashboard = "";
 $tituloFiltro = "Ecografías del día";
 
 switch ($filtro_dashboard) {
     case 'dia':
-        $whereDashboard = "WHERE DATE(fecha) = '$fecha_segura'";
+        $whereDashboard = "WHERE fecha >= '$fecha_segura' 
+                           AND fecha < DATE_ADD('$fecha_segura', INTERVAL 1 DAY)";
         $tituloFiltro = "Ecografías del " . date('d/m/Y', strtotime($fecha_dashboard));
         break;
 
@@ -93,20 +109,53 @@ switch ($filtro_dashboard) {
         $tituloFiltro = "Ecografías de este año";
         break;
 
+    case 'anio_historico':
+        $whereDashboard = "WHERE YEAR(fecha) = $anio_dashboard";
+        $tituloFiltro = "Ecografías del año " . $anio_dashboard;
+        break;
+
     case 'todos':
         $whereDashboard = "";
         $tituloFiltro = "Total de ecografías";
         break;
 
     default:
-        $whereDashboard = "WHERE DATE(fecha) = CURDATE()";
+        $whereDashboard = "WHERE fecha >= CURDATE() 
+                           AND fecha < CURDATE() + INTERVAL 1 DAY";
         $tituloFiltro = "Ecografías de hoy";
         break;
 }
 
-$totalFiltrado = $conexion->query("SELECT COUNT(*) as total FROM ecografias $whereDashboard")->fetch_assoc();
-?>
+$totalFiltrado = $conexion->query("
+    SELECT COUNT(*) AS total 
+    FROM ecografias 
+    $whereDashboard
+")->fetch_assoc();
 
+/* DATOS PARA GRÁFICO ANUAL */
+$datosMeses = [];
+
+for ($i = 1; $i <= 12; $i++) {
+    $datosMeses[$i] = 0;
+}
+
+$sqlGrafico = "
+    SELECT MONTH(fecha) AS mes, COUNT(*) AS total
+    FROM ecografias
+    WHERE YEAR(fecha) = $anio_dashboard
+    GROUP BY MONTH(fecha)
+    ORDER BY mes ASC
+";
+
+$resGrafico = $conexion->query($sqlGrafico);
+
+while ($row = $resGrafico->fetch_assoc()) {
+    $datosMeses[(int)$row['mes']] = (int)$row['total'];
+}
+
+$labelsMeses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Set','Oct','Nov','Dic'];
+$valoresMeses = array_values($datosMeses);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -748,7 +797,7 @@ body::before {
 
 .form-filtro-dashboard select:focus,
 .form-filtro-dashboard input:focus {
-    border-color: #2563eb;
+    border-color: #4b5466;
     box-shadow: 0 0 0 3px rgba(37,99,235,.13);
 }
 .card-estadistica {
@@ -763,6 +812,47 @@ body::before {
 .form-filtro-dashboard input {
     width: 100%;
     min-width: 190px;
+}
+.dashboard-grafico {
+    width: 90%;
+    max-width: 1250px;
+    margin: 0 auto 35px;
+}
+
+.card-grafico {
+    background: rgba(248, 250, 252, 0.92);
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 12px 30px rgba(15,23,42,.10);
+    border: 1px solid rgba(203, 213, 225, 0.55);
+}
+
+.grafico-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.grafico-header h2 {
+    margin: 0;
+    color: #3f465c;
+    font-size: 24px;
+}
+
+.grafico-header span {
+    background: #454a57;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+.card-grafico {
+    max-height: 360px;
+}
+
+#graficoAnual {
+    max-height: 280px !important;
 }
 </style>
 </head>
@@ -887,6 +977,9 @@ body::before {
                     <option value="todos" <?php if($filtro_dashboard == 'todos') echo 'selected'; ?>>
                         Todos
                     </option>
+                    <option value="anio_historico" <?php if($filtro_dashboard == 'anio_historico') echo 'selected'; ?>>
+    Año específico
+</option>
                 </select>
 
                 <input 
@@ -897,6 +990,17 @@ body::before {
                 max="<?php echo date('Y-m-d'); ?>"
                 onchange="guardarScroll(); this.form.submit()"
 >
+<select 
+    name="anio_dashboard" 
+    id="anio_dashboard"
+    onchange="guardarScroll(); this.form.submit()"
+>
+    <?php for ($a = 2015; $a <= date('Y'); $a++) { ?>
+        <option value="<?php echo $a; ?>" <?php if($anio_dashboard == $a) echo 'selected'; ?>>
+            <?php echo $a; ?>
+        </option>
+    <?php } ?>
+</select>
             </form>
 
             <h2><?php echo $totalFiltrado['total']; ?></h2>
@@ -911,6 +1015,16 @@ body::before {
 
     </div>
 
+</section>
+<section class="dashboard-grafico">
+    <div class="card-grafico">
+        <div class="grafico-header">
+            <h2>Resumen anual de ecografías</h2>
+            <span>Año <?php echo $anio_dashboard; ?></span>
+        </div>
+
+        <canvas id="graficoAnual"></canvas>
+    </div>
 </section>
 <section class="zona-meta">
 <div class="control-meta">
@@ -1080,6 +1194,37 @@ document.querySelectorAll("form").forEach(function(formulario) {
     formulario.addEventListener("submit", function() {
         guardarScroll();
     });
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const ctx = document.getElementById('graficoAnual');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: <?php echo json_encode($labelsMeses); ?>,
+        datasets: [{
+            label: 'Ecografías registradas',
+            data: <?php echo json_encode($valoresMeses); ?>,
+            backgroundColor: '#7082aa',
+            borderRadius: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: true
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
 });
 </script>
 </body>

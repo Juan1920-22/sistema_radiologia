@@ -26,14 +26,16 @@ $meses = [
 $periodo_busqueda = $anio . '-' . str_pad($mes, 2, '0', STR_PAD_LEFT);
 $stmt = $conexion->prepare("
     SELECT 
-        c.codigo_cpt,
-        c.examen_solicitado,
-        c.co_codups,
-        c.servicio_especialidad,
-        COUNT(*) AS total
-    FROM ecografias e
-    INNER JOIN cpt_codes c 
-        ON e.id_examen = c.id_examen
+    c.codigo_cpt,
+    m.nombre AS examen_nombre,
+    c.co_codups,
+    c.servicio_especialidad,
+    COUNT(*) AS total
+FROM ecografias e
+INNER JOIN cpt_codes c 
+    ON e.id_examen = c.id_examen
+LEFT JOIN mantenimiento m 
+    ON c.id_examen = m.id
     WHERE DATE_FORMAT(e.fecha, '%Y-%m') = ?
     GROUP BY c.codigo_cpt, c.examen_solicitado, c.co_codups, c.servicio_especialidad
     ORDER BY c.codigo_cpt ASC
@@ -357,15 +359,20 @@ box-shadow:0 4px 12px rgba(124,58,237,.25);
 <div class="catalogo">
     <?php
     $sqlCatalogo = "
-        SELECT codigo_cpt, examen_solicitado
-        FROM cpt_codes
-        ORDER BY codigo_cpt ASC
-    ";
-    $resCatalogo = $conexion->query($sqlCatalogo);
+    SELECT 
+        c.codigo_cpt, 
+        m.nombre AS examen_nombre
+    FROM cpt_codes c
+    LEFT JOIN mantenimiento m 
+        ON c.id_examen = m.id
+    ORDER BY c.codigo_cpt ASC
+";
 
-    while ($cat = $resCatalogo->fetch_assoc()) {
-        echo "<div><span>" . $cat['codigo_cpt'] . "</span> " . $cat['examen_solicitado'] . "</div>";
-    }
+$resCatalogo = $conexion->query($sqlCatalogo);
+
+while ($cat = $resCatalogo->fetch_assoc()) {
+    echo "<div><span>" . $cat['codigo_cpt'] . "</span> " . $cat['examen_nombre'] . "</div>";
+}
     ?>
 </div>
 

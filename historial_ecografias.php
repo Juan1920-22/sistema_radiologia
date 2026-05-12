@@ -54,6 +54,24 @@ if (count($where) > 0) {
     $where_sql = "WHERE " . implode(" AND ", $where);
 }
 
+$limite = 50;
+
+$pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+
+if ($pagina < 1) {
+    $pagina = 1;
+}
+
+$inicio = ($pagina - 1) * $limite;
+$sql_count = "SELECT COUNT(*) AS total
+              FROM ecografias e
+              $where_sql";
+
+$res_count = mysqli_query($conexion, $sql_count);
+$fila_count = mysqli_fetch_assoc($res_count);
+
+$total_registros = $fila_count['total'];
+$total_paginas = ceil($total_registros / $limite);
 $sql = "SELECT 
             e.*,
             c.nombre AS condicion_nombre,
@@ -64,9 +82,10 @@ $sql = "SELECT
         LEFT JOIN mantenimiento s ON e.id_servicio = s.id
         LEFT JOIN mantenimiento ex ON e.id_examen = ex.id
         $where_sql 
-        ORDER BY e.fecha DESC";
+        ORDER BY e.fecha DESC
+LIMIT $inicio, $limite";
 $resultado = mysqli_query($conexion, $sql);
-$total_registros = $resultado->num_rows;
+
 $sql_total_monto = "SELECT SUM(e.monto) AS total_monto 
                     FROM ecografias e 
                     $where_sql";
@@ -162,11 +181,12 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
         }
 
         .acciones-tabla {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            align-items: center;
-        }
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+}
+
 
         .btn {
     border: none;
@@ -261,23 +281,24 @@ th {
         }
 
         .btn-editar,
-        .btn-eliminar {
-                width: 80px;
-                text-align: center;
-                padding: 7px 0;
-                border-radius: 8px;
-                color: white !important;
-                text-decoration: none !important;
-                font-size: 12px;
-                font-weight: bold;
-                display: inline-block;
-        }
+.btn-eliminar {
+    width: 80px;
+    text-align: center;
+    padding: 7px 0;
+    border-radius: 8px;
+    color: white !important;
+    text-decoration: none !important;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+}
         .btn-editar {
-                background: #f59e0b;
-        }
-        .btn-eliminar {
-                background: #dc2626;
-        }
+    background: #f59e0b;
+}
+
+.btn-eliminar {
+    background: #dc2626;
+}
         .btn-editar:hover {
                 background: #d97706;
         }
@@ -372,6 +393,62 @@ th {
     .contenedor {
         background: white !important;
     }
+}
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    margin: 25px 0 5px;
+    font-weight: bold;
+    color: #1e3a8a;
+}
+
+.btn-pagina {
+    background: #1e3a8a;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-pagina:hover {
+    background: #172554;
+}
+.scroll-top {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 18px;
+    margin-bottom: 5px;
+}
+
+.scroll-top div {
+    height: 1px;
+}
+.diagnostico-celda {
+    max-width: 260px;
+    min-width: 220px;
+    text-align: left;
+    line-height: 1.4;
+    font-size: 12px;
+    color: #1e293b;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+th:last-child,
+td:last-child {
+    position: sticky;
+    right: 0;
+    min-width: 110px;
+    background: white;
+    z-index: 10;
+}
+
+th:last-child {
+    background: #1e3a8a !important;
+    color: white !important;
+    z-index: 20;
 }
     </style>
 </head>
@@ -517,12 +594,31 @@ th {
         </div>
 
     </form>
-
+<div class="scroll-top">
+    <div></div>
+</div>
     <div class="tabla-contenedor">
 <div style="margin: 15px 0; font-weight: bold; color: #1e3a8a;">
     Registros encontrados: <?php echo $total_registros; ?> 
 &nbsp;&nbsp; | &nbsp;&nbsp;
 Monto total: S/ <?php echo number_format($total_monto, 2); ?>
+</div>
+<div class="paginacion paginacion-arriba">
+    <?php
+    $queryParams = $_GET;
+
+    if ($pagina > 1) {
+        $queryParams['pagina'] = $pagina - 1;
+        echo '<a href="?' . http_build_query($queryParams) . '" class="btn-pagina">← Anterior</a>';
+    }
+
+    echo '<span>Página ' . $pagina . ' de ' . $total_paginas . '</span>';
+
+    if ($pagina < $total_paginas) {
+        $queryParams['pagina'] = $pagina + 1;
+        echo '<a href="?' . http_build_query($queryParams) . '" class="btn-pagina">Siguiente →</a>';
+    }
+    ?>
 </div>
         <table>
             <thead>
@@ -560,7 +656,17 @@ Monto total: S/ <?php echo number_format($total_monto, 2); ?>
                             <td><?php echo $fila['medico_turno']; ?></td>
                             <td><?php echo $fila['tipo_atencion']; ?></td>
                             <td><?php echo $fila['examen_nombre']; ?></td>
-                            <td><?php echo $fila['diagnostico']; ?></td>
+                            <td class="diagnostico-celda" title="<?php echo htmlspecialchars($fila['diagnostico']); ?>">
+    <?php 
+    $diagnostico = $fila['diagnostico'];
+
+    if (strlen($diagnostico) > 80) {
+        echo htmlspecialchars(substr($diagnostico, 0, 80)) . "...";
+    } else {
+        echo htmlspecialchars($diagnostico);
+    }
+    ?>
+</td>
                             <td><?php 
                             if($fila['monto'] == 0 || $fila['monto'] == '0.00'){
                             echo "";
@@ -703,6 +809,21 @@ Swal.fire({
     function confirmarEliminar() {
     return confirm("⚠️ ¿Seguro que deseas eliminar este registro?");
 }
+</script>
+<script>
+const scrollTop = document.querySelector('.scroll-top');
+const scrollBottom = document.querySelector('.tabla-contenedor');
+
+scrollTop.firstElementChild.style.width =
+scrollBottom.scrollWidth + 'px';
+
+scrollTop.addEventListener('scroll', () => {
+    scrollBottom.scrollLeft = scrollTop.scrollLeft;
+});
+
+scrollBottom.addEventListener('scroll', () => {
+    scrollTop.scrollLeft = scrollBottom.scrollLeft;
+});
 </script>
 </body>
 </html>
