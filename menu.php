@@ -877,9 +877,9 @@ body::before {
 <section class="hero">
 
     <div class="hero-slider">
-        <img src="img/portada2.jpg?v=1" class="hero-slide active" alt="Portada 2">
-        <img src="img/hero2.jpg" class="hero-slide" alt="Imagen 2">
-        <img src="img/hero3.jpg" class="hero-slide" alt="Imagen 3">
+        <img src="img/hero4.jpeg?v=1" class="hero-slide active" alt="Heroe 4">
+        <img src="img/hero9.jpeg" class="hero-slide" alt="Imagen 9">
+        <img src="img/hero6.jpeg" class="hero-slide" alt="Imagen 6">
     </div>
 
     <div class="hero-contenido">
@@ -1090,13 +1090,13 @@ body::before {
         <h2>Área de Diagnóstico por Imágenes</h2>
 
         <div class="slider">
-            <img src="img/ecografia1.jpg" class="slide active" alt="Ecografía 1">
-            <img src="img/ecografia2.jpg" class="slide" alt="Ecografía 2">
-            <img src="img/ecografia3.jpg" class="slide" alt="Ecografía 3">
+            <img src="img/hero1.jpeg" class="slide active" alt="Hero 1">
+            <img src="img/hero2.jpeg" class="slide" alt="Hero 2">
+            <img src="img/hero10.jpeg" class="slide" alt="Hero 10">
 
             <div class="slider-overlay">
                 <strong>Sistema de Ecografías</strong>
-                <span>Gestión ordenada y segura de registros.</span>
+                <span>Gesztión ordenada y segura de registros.</span>
             </div>
 
             <div class="slider-puntos">
