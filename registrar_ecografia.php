@@ -808,6 +808,10 @@ body {
             <textarea name="diagnostico" placeholder="Ingrese el diagnóstico del paciente..."></textarea>
         </div>
 
+<div class="campo">
+    <label>Hora (opcional):</label>
+    <input type="time" name="hora_examen" id="hora_examen" placeholder="HH:MM">
+</div>
 <div class="botones">
 <button type="button" id="btnLimpiar" class="btn-limpiar">
         Limpiar
@@ -1346,16 +1350,14 @@ document.addEventListener("keydown", function(e) {
         siguiente.focus();
     }
 });
+/* Diagnóstico: permite usar Enter para saltos de línea.
+   Opcional: Ctrl + Enter manda el foco al botón Registrar. */
 document.querySelector('textarea[name="diagnostico"]').addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && e.ctrlKey) {
         e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-
         document.querySelector('button[type="submit"]').focus();
-        return false;
     }
-}, true);
+});
 document.getElementById("btnLimpiar").addEventListener("click", function() {
     document.querySelector("form").reset();
 

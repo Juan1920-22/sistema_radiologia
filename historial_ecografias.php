@@ -76,7 +76,8 @@ $sql = "SELECT
             e.*,
             c.nombre AS condicion_nombre,
             s.nombre AS servicio_nombre,
-            ex.nombre AS examen_nombre
+            ex.nombre AS examen_nombre,
+            e.hora_examen AS hora
         FROM ecografias e
         LEFT JOIN mantenimiento c ON e.id_condicion = c.id
         LEFT JOIN mantenimiento s ON e.id_servicio = s.id
@@ -312,7 +313,16 @@ th {
         td:nth-child(11) {
          max-width: 130px;
          white-space: normal;
+         
         }
+        td:nth-child(15) {
+    min-width: 80px;   /* suficiente para HH:MM */
+    text-align: center;
+}
+th:nth-child(15) {
+    min-width: 80px;
+    text-align: center;
+}
         .filtros-botones {
     grid-column: 1 / -1;
     display: flex;
@@ -637,6 +647,7 @@ Monto total: S/ <?php echo number_format($total_monto, 2); ?>
                     <th>Monto</th>
                     <th>Boleta</th>
                     <th>Convenio</th>
+                    <th>Hora</th>
                     <th>Acción</th>
                 
                 </tr>
@@ -674,6 +685,7 @@ Monto total: S/ <?php echo number_format($total_monto, 2); ?>
                             echo "S/ " . number_format($fila['monto'], 2);} ?> </td>
                             <td><?php echo !empty($fila['numero_boleta']) ? $fila['numero_boleta'] : ''; ?></td>
                             <td><?php echo !empty($fila['convenio']) ? $fila['convenio'] : ''; ?></td>
+                            <td><?php echo !empty($fila['hora_examen']) ? $fila['hora_examen'] : ''; ?></td>
                             <td>
                             <div class="acciones-tabla">
                             <a class="btn-editar" href="editar_ecografia.php?id=<?php echo $fila['id_ecografia']; ?>">
@@ -738,6 +750,7 @@ document.getElementById("btnPDF").addEventListener("click", function(){
                 c[11].innerText,
                 c[12].innerText === '-' ? '' : c[12].innerText,
                 c[13].innerText === '-' ? '' : c[13].innerText
+                c[14].innerText  // Hora
             ]);
         }
     });
@@ -761,7 +774,7 @@ document.querySelectorAll("table tbody tr").forEach(row => {
     doc.autoTable({
         head: [[
             "H.C", "DNI", "Fecha", "Paciente", "Condición",
-            "Servicio", "Médico", "Examen", "Diagnóstico", "Monto", "Boleta", "Convenio"
+            "Servicio", "Médico", "Examen", "Diagnóstico", "Monto", "Boleta", "Convenio", "Hora"
         ]],
         body: filas,
         startY: 55,

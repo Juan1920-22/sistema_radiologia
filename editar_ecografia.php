@@ -255,7 +255,10 @@ value="<?php echo ($fila['monto'] == 0) ? '' : $fila['monto']; ?>">
     <label>Convenio:</label>
     <input type="text" name="convenio" value="<?php echo $fila['convenio']; ?>">
 </div>
-
+<div class="campo">
+    <label>Hora (opcional):</label>
+    <input type="time" name="hora_examen" value="<?php echo !empty($fila['hora_examen']) ? $fila['hora_examen'] : ''; ?>">
+</div>
 <div class="acciones">
     <button type="submit" class="btn-guardar">Guardar cambios</button>
     <a href="historial_ecografias.php" class="btn-volver">Cancelar</a>

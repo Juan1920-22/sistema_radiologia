@@ -7,6 +7,31 @@ if (!isset($_SESSION['usuario'])) {
 }
 
 include("conexion.php");
+// -------------------------
+// Rango de años para comparación
+// -------------------------
+$anio_inicio = isset($_GET['anio_inicio']) ? (int)$_GET['anio_inicio'] : date('Y')-1;
+$anio_fin    = isset($_GET['anio_fin'])    ? (int)$_GET['anio_fin']    : date('Y');
+
+if ($anio_inicio > $anio_fin) {
+    list($anio_inicio, $anio_fin) = [$anio_fin, $anio_inicio];
+}
+
+// Inicializa array
+$datosRangoAnios = [];
+for ($a = $anio_inicio; $a <= $anio_fin; $a++) {
+    $res = $conexion->query("SELECT COUNT(*) AS total FROM ecografias WHERE YEAR(fecha) = $a");
+    if ($res) {
+        $row = $res->fetch_assoc();
+        $datosRangoAnios[$a] = isset($row['total']) ? (int)$row['total'] : 0;
+    } else {
+        $datosRangoAnios[$a] = 0;
+    }
+}
+
+$labelsRango = array_keys($datosRangoAnios);
+$valoresRango = array_values($datosRangoAnios);
+
 $fechaHoy = date('Y-m-d');
 
 /* Guardar o actualizar meta diaria */
@@ -848,11 +873,71 @@ body::before {
     font-weight: bold;
 }
 .card-grafico {
-    max-height: 360px;
+    min-height: 360px;
+    max-height: none;
 }
 
-#graficoAnual {
-    max-height: 280px !important;
+.chart-box {
+    width: 100%;
+    height: 360px; /* suficiente para que se vea el gráfico */
+}
+#graficoRango {
+    width: 100% !important;
+    height: 100% !important;
+}
+.grafico-header {
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.grafico-header > div {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.form-rango-dashboard {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.campo-rango {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-rango label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #1e3a8a;
+    margin-bottom: 5px;
+}
+
+.campo-rango input {
+    width: 105px;
+    height: 38px;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.btn-comparar-rango {
+    height: 38px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-comparar-rango:hover {
+    background: #1e40af;
 }
 </style>
 </head>
@@ -944,8 +1029,10 @@ body::before {
     <div class="bienvenida">
         <h2>Panel principal</h2>
         <p>
-            Bienvenido al sistema. Desde este panel puede acceder rápidamente a los principales
-            módulos para gestionar la información ecográfica de manera segura, ordenada y eficiente.
+            Desde este panel podrás registrar, consultar y organizar la información ecográfica de manera segura, ordenada y eficiente.
+Accede rápidamente a los módulos principales, controla los historiales de pacientes y optimiza tu trabajo diario para brindar una atención más ágil y precisa.</p>
+
+<p>✨ Tu trabajo es importante y aquí encontrarás la herramienta perfecta para hacerlo aún mejor. ✨
         </p>
         <div class="fecha-actual" id="fechaActual"></div>
     </div>
@@ -960,10 +1047,6 @@ body::before {
                 <select name="filtro_dashboard" id="filtro_dashboard" onchange="guardarScroll(); this.form.submit()">
                     <option value="dia" <?php if($filtro_dashboard == 'dia') echo 'selected'; ?>>
                         Día específico
-                    </option>
-
-                    <option value="semana" <?php if($filtro_dashboard == 'semana') echo 'selected'; ?>>
-                        Esta semana
                     </option>
 
                     <option value="mes" <?php if($filtro_dashboard == 'mes') echo 'selected'; ?>>
@@ -1016,14 +1099,42 @@ body::before {
     </div>
 
 </section>
+<!-- Gráfico anual -->
 <section class="dashboard-grafico">
     <div class="card-grafico">
         <div class="grafico-header">
-            <h2>Resumen anual de ecografías</h2>
+            <h2>Resumen mensual de ecografías</h2>
             <span>Año <?php echo $anio_dashboard; ?></span>
         </div>
+        <div class="chart-box">
+            <canvas id="graficoAnual"></canvas>
+        </div>
+    </div>
+</section>
 
-        <canvas id="graficoAnual"></canvas>
+<!-- Gráfico de comparación por rango de años -->
+<section class="dashboard-grafico">
+    <div class="card-grafico">
+        <div class="grafico-header">
+            <h2>Comparación de ecografías por años</h2>
+            <span><?php echo $anio_inicio . " - " . $anio_fin; ?></span>
+        </div>
+
+        <form method="GET" class="form-rango-dashboard" onsubmit="guardarScroll()">
+            <div class="campo-rango">
+                <label>Desde</label>
+                <input type="number" name="anio_inicio" min="2015" max="<?php echo date('Y'); ?>" value="<?php echo $anio_inicio; ?>" required>
+            </div>
+            <div class="campo-rango">
+                <label>Hasta</label>
+                <input type="number" name="anio_fin" min="2015" max="<?php echo date('Y'); ?>" value="<?php echo $anio_fin; ?>" required>
+            </div>
+            <button type="submit" class="btn-comparar-rango">Comparar</button>
+        </form>
+
+        <div class="chart-box">
+            <canvas id="graficoRango"></canvas>
+        </div>
     </div>
 </section>
 <section class="zona-meta">
@@ -1096,7 +1207,7 @@ body::before {
 
             <div class="slider-overlay">
                 <strong>Sistema de Ecografías</strong>
-                <span>Gesztión ordenada y segura de registros.</span>
+                <span>Gestión ordenada y segura de registros.</span>
             </div>
 
             <div class="slider-puntos">
@@ -1173,8 +1284,32 @@ function controlarFechaDashboard() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", controlarFechaDashboard);
-document.getElementById("filtro_dashboard").addEventListener("change", controlarFechaDashboard);
+document.addEventListener("DOMContentLoaded", function() {
+    const ctxRango = document.getElementById('graficoRango');
+
+    if(ctxRango) {
+        new Chart(ctxRango, {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode($labelsRango); ?>,
+                datasets: [{
+                    label: 'Ecografías registradas',
+                    data: <?php echo json_encode($valoresRango); ?>,
+                    backgroundColor: '#12dad0',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+});
+</script>
+
 </script>
 <script>
 function guardarScroll() {
@@ -1208,12 +1343,13 @@ new Chart(ctx, {
         datasets: [{
             label: 'Ecografías registradas',
             data: <?php echo json_encode($valoresMeses); ?>,
-            backgroundColor: '#7082aa',
+            backgroundColor: '#9781f8ea',
             borderRadius: 8
         }]
     },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 display: true
@@ -1227,5 +1363,28 @@ new Chart(ctx, {
     }
 });
 </script>
+<script>
+const ctxRango = document.getElementById('graficoRango');
+
+new Chart(ctxRango, {
+    type: 'bar',
+    data: {
+        labels: <?php echo json_encode($labelsRango); ?>,
+        datasets: [{
+            label: 'Ecografías registradas',
+            data: <?php echo json_encode($valoresRango); ?>,
+            backgroundColor: '#31ffee',
+            borderRadius: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: { y: { beginAtZero: true } }
+    }
+});
 </body>
 </html>

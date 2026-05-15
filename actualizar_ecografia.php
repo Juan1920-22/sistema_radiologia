@@ -19,7 +19,7 @@ $diagnostico = $_POST['diagnostico'];
 $monto = $_POST['monto'] ?? null;
 $numero_boleta = $_POST['numero_boleta'] ?? null;
 $convenio = $_POST['convenio'] ?? null;
-
+$hora = !empty($_POST['hora_examen']) ? $_POST['hora_examen'] : null;
 /* Obtener nombres desde mantenimiento */
 $condicion = '';
 $servicio_solicitante = '';
@@ -58,7 +58,8 @@ id_examen='$id_examen',
 diagnostico='$diagnostico',
 monto='$monto',
 numero_boleta='$numero_boleta',
-convenio='$convenio'
+convenio='$convenio',
+hora_examen = '$hora'
 WHERE id_ecografia='$id'";
 
 if (mysqli_query($conexion, $sql)) {

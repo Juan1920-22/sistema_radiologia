@@ -18,7 +18,7 @@ $diagnostico = $_POST['diagnostico'];
 $monto = $_POST['monto'] ?? null;
 $numero_boleta = $_POST['numero_boleta'] ?? null;
 $convenio = $_POST['convenio'] ?? null;
-
+$hora = !empty($_POST['hora_examen']) ? $_POST['hora_examen'] : null;
 /* Obtener nombres desde mantenimiento */
 $condicion = '';
 $servicio_solicitante = '';
@@ -55,6 +55,7 @@ $sql = "INSERT INTO ecografias (
     monto,
     numero_boleta,
     convenio,
+    hora_examen,
     id_condicion,
     id_servicio,
     id_examen,
@@ -75,6 +76,7 @@ $sql = "INSERT INTO ecografias (
     '$monto',
     '$numero_boleta',
     '$convenio',
+    '$hora',
     '$id_condicion',
     '$id_servicio',
     '$id_examen',
