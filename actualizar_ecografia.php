@@ -1,6 +1,7 @@
 <?php
 include("conexion.php");
 
+// --- 1. Recibir datos del formulario ---
 $id = $_POST['id_ecografia'];
 $historia_clinica = $_POST['historia_clinica'];
 $dni = $_POST['dni'];
@@ -11,7 +12,7 @@ $sexo = $_POST['sexo'];
 
 $id_condicion = $_POST['condicion'];
 $id_servicio = $_POST['servicio_solicitante'];
-$id_examen = $_POST['examen_solicitado'];
+$examenes_seleccionados = $_POST['examenes_solicitados'] ?? []; // Ahora es array para varios exámenes
 
 $medico_turno = $_POST['medico_turno'];
 $tipo_atencion = $_POST['tipo_atencion'];
@@ -20,7 +21,8 @@ $monto = $_POST['monto'] ?? null;
 $numero_boleta = $_POST['numero_boleta'] ?? null;
 $convenio = $_POST['convenio'] ?? null;
 $hora = !empty($_POST['hora_examen']) ? $_POST['hora_examen'] : null;
-/* Obtener nombres desde mantenimiento */
+
+// --- 2. Obtener nombres desde mantenimiento ---
 $condicion = '';
 $servicio_solicitante = '';
 $examen_solicitado = '';
@@ -35,11 +37,18 @@ if ($row = $res->fetch_assoc()) {
     $servicio_solicitante = $row['nombre'];
 }
 
-$res = $conexion->query("SELECT nombre FROM mantenimiento WHERE id = '$id_examen'");
-if ($row = $res->fetch_assoc()) {
-    $examen_solicitado = $row['nombre'];
+// --- 3. Obtener nombres de los exámenes seleccionados ---
+$examen_nombres = [];
+foreach ($examenes_seleccionados as $id_ex) {
+    $res = $conexion->query("SELECT nombre FROM mantenimiento WHERE id = '$id_ex'");
+    if ($row = $res->fetch_assoc()) {
+        $examen_nombres[] = $row['nombre'];
+    }
 }
+$id_examen = implode(",", $examenes_seleccionados);      // IDs separados por coma
+$examen_solicitado = implode(", ", $examen_nombres);     // Nombres concatenados
 
+// --- 4. Actualizar registro ---
 $sql = "UPDATE ecografias SET
 historia_clinica='$historia_clinica',
 dni='$dni',
@@ -59,9 +68,10 @@ diagnostico='$diagnostico',
 monto='$monto',
 numero_boleta='$numero_boleta',
 convenio='$convenio',
-hora_examen = '$hora'
+hora_examen='$hora'
 WHERE id_ecografia='$id'";
 
+// --- 5. Ejecutar y redirigir ---
 if (mysqli_query($conexion, $sql)) {
     header("Location: historial_ecografias.php?editado=ok");
     exit();

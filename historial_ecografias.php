@@ -45,9 +45,8 @@ if (!empty($tipo_atencion)) {
 }
 
 if (!empty($examen_solicitado)) {
-    $where[] = "e.id_examen = '$examen_solicitado'";
+    $where[] = "e.examen_solicitado LIKE '%$examen_solicitado%'";
 }
-
 $where_sql = "";
 
 if (count($where) > 0) {
@@ -75,18 +74,36 @@ $total_paginas = ceil($total_registros / $limite);
 $sql = "SELECT 
             e.*,
             c.nombre AS condicion_nombre,
-            s.nombre AS servicio_nombre,
-            ex.nombre AS examen_nombre,
-            e.hora_examen AS hora
+            s.nombre AS servicio_nombre
         FROM ecografias e
         LEFT JOIN mantenimiento c ON e.id_condicion = c.id
         LEFT JOIN mantenimiento s ON e.id_servicio = s.id
-        LEFT JOIN mantenimiento ex ON e.id_examen = ex.id
         $where_sql 
         ORDER BY e.fecha DESC
 LIMIT $inicio, $limite";
 $resultado = mysqli_query($conexion, $sql);
+// Transformar id_examenes a nombres con saltos de línea
+$examenes_por_fila = [];
+while ($fila = mysqli_fetch_assoc($resultado)) {
+    if (!empty($fila['id_examen'])) {
+        $ids_examenes = explode(",", $fila['id_examen']);
+        $nombres_examenes = [];
 
+        foreach ($ids_examenes as $id_ex) {
+            $res = $conexion->query("SELECT nombre FROM mantenimiento WHERE id = '$id_ex'");
+            if ($r = $res->fetch_assoc()) {
+                $nombres_examenes[] = $r['nombre'];
+            }
+        }
+
+        // Unir con salto de línea para nl2br
+        $fila['examen_solicitado'] = implode("\n", $nombres_examenes);
+    } else {
+        $fila['examen_solicitado'] = '';
+    }
+
+    $examenes_por_fila[] = $fila;
+}
 $sql_total_monto = "SELECT SUM(e.monto) AS total_monto 
                     FROM ecografias e 
                     $where_sql";
@@ -240,11 +257,14 @@ $total_monto = $fila_monto['total_monto'] ?? 0;
            min-width: 1250px;
         }
 
-           th, td {
-           padding: 8px;
-           word-wrap: break-word;
-           text-align: center;
-        }
+td, th {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ccc;
+    white-space: nowrap; /* <-- esto evita que el texto se vaya a la siguiente línea */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 th {
     background: #1e3a8a !important;
@@ -310,11 +330,12 @@ th {
         td:nth-child(8),
         td:nth-child(9),
         td:nth-child(10),
-        td:nth-child(11) {
-         max-width: 130px;
-         white-space: normal;
-         
-        }
+        td:nth-child(11) { /* columna de Exámenes */
+    white-space: normal; /* permite salto de línea */
+    word-wrap: break-word;
+    max-width: 300px; /* o el ancho que quieras */
+    text-align: left;
+}
         td:nth-child(15) {
     min-width: 80px;   /* suficiente para HH:MM */
     text-align: center;
@@ -576,21 +597,20 @@ th:last-child {
         <div class="campo">
     <label>Examen solicitado:</label>
     <select name="examen_solicitado">
-        <option value="">Todos los exámenes</option>
-        <?php
-        $examenesFiltro = $conexion->query("
-            SELECT id, nombre 
-            FROM mantenimiento 
-            WHERE tipo = 'Examen'
-            ORDER BY nombre ASC
-        ");
-
-        while ($ex = $examenesFiltro->fetch_assoc()) {
-            $selected = ($examen_solicitado == $ex['id']) ? 'selected' : '';
-            echo "<option value='" . $ex['id'] . "' $selected>" . $ex['nombre'] . "</option>";
-        }
-        ?>
-    </select>
+    <option value="">Todos los exámenes</option>
+    <?php
+    $examenesFiltro = $conexion->query("
+        SELECT id, nombre 
+        FROM mantenimiento 
+        WHERE tipo = 'Examen'
+        ORDER BY nombre ASC
+    ");
+    while ($ex = $examenesFiltro->fetch_assoc()) {
+        $selected = ($examen_solicitado == $ex['id']) ? 'selected' : '';
+        echo "<option value='" . $ex['nombre'] . "' $selected>" . $ex['nombre'] . "</option>";
+    }
+    ?>
+</select>
 </div>
 
         <div class="acciones filtros-botones">
@@ -655,7 +675,7 @@ Monto total: S/ <?php echo number_format($total_monto, 2); ?>
 
             <tbody>
                 <?php if (mysqli_num_rows($resultado) > 0) { ?>
-                    <?php while ($fila = mysqli_fetch_assoc($resultado)) { ?>
+                    <?php foreach ($examenes_por_fila as $fila) { ?>
                         <tr>
                             <td><?php echo $fila['historia_clinica']; ?></td>
                             <td><?php echo $fila['dni']; ?></td>
@@ -666,7 +686,8 @@ Monto total: S/ <?php echo number_format($total_monto, 2); ?>
                             <td><?php echo $fila['servicio_nombre']; ?></td>
                             <td><?php echo $fila['medico_turno']; ?></td>
                             <td><?php echo $fila['tipo_atencion']; ?></td>
-                            <td><?php echo $fila['examen_nombre']; ?></td>
+                            <td><?= nl2br(htmlspecialchars($fila['examen_solicitado'])) ?></td>
+</td>
                             <td class="diagnostico-celda" title="<?php echo htmlspecialchars($fila['diagnostico']); ?>">
     <?php 
     $diagnostico = $fila['diagnostico'];
@@ -745,7 +766,7 @@ document.getElementById("btnPDF").addEventListener("click", function(){
                 c[5].innerText,
                 c[6].innerText,
                 c[7].innerText,
-                c[9].innerText,
+                c[9].innerText // sigue apuntando a la columna que ahora tiene examen_solicitado
                 c[10].innerText,
                 c[11].innerText,
                 c[12].innerText === '-' ? '' : c[12].innerText,
@@ -772,20 +793,23 @@ document.querySelectorAll("table tbody tr").forEach(row => {
     }
 });
     doc.autoTable({
-        head: [[
-            "H.C", "DNI", "Fecha", "Paciente", "Condición",
-            "Servicio", "Médico", "Examen", "Diagnóstico", "Monto", "Boleta", "Convenio", "Hora"
-        ]],
-        body: filas,
-        startY: 55,
-        theme: 'grid',
-        styles: {
-            fontSize: 8,
-            cellPadding: 4,
-            overflow: 'linebreak',
-            valign: 'middle'
-        }
-    });
+    head: [[
+        "H.C", "DNI", "Fecha", "Paciente", "Condición",
+        "Servicio", "Médico", "Examen", "Diagnóstico", "Monto", "Boleta", "Convenio", "Hora"
+    ]],
+    body: filas,
+    startY: 55,
+    theme: 'grid',
+    columnStyles: {
+        7: { cellWidth: 200 }  // índice de la columna Examen
+    },
+    styles: {
+        fontSize: 8,
+        cellPadding: 4,
+        overflow: 'linebreak', // importante para saltos de línea
+        valign: 'middle'
+    }
+});
     doc.setFontSize(12);
     doc.text("TOTAL GENERAL: S/ " + totalMonto.toFixed(2), 40, doc.lastAutoTable.finalY + 25);
     doc.save("historial_ecografias.pdf");

@@ -651,6 +651,53 @@ body {
 .btn-limpiar:hover {
     background: #cbd5e1 !important;
 }
+/* Select2 múltiple optimizado */
+.select2-container--default .select2-selection--multiple {
+    min-height: 35px;       /* altura mínima */
+    max-height: 60px;       /* evita que crezca demasiado */
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 4px 8px;
+    background: #f8fafc;
+    overflow-y: auto;       /* scroll si hay más tags */
+    display: flex;
+    flex-wrap: wrap;        /* tags en horizontal, luego baja si no caben */
+    gap: 4px;               /* separación entre tags */
+    align-items: flex-start;   /* fuerza que los tags estén arriba */
+height: auto;              /* permite que el contenedor se ajuste automáticamente */
+}
+
+
+/* Tags de los elementos seleccionados */
+/* Tags seleccionados */
+/* Tags seleccionados */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    padding: 3px 8px;
+    font-size: 13px;
+    border-radius: 6px;
+    background-color: #2563eb;
+    color: white;
+      margin-top: 2px;      /* reduce espacio extra arriba */
+    margin-bottom: 0;     /* elimina espacio extra debajo */
+}
+
+/* X para eliminar tag */
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: white;
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+/* Zona donde se muestran los tags */
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    flex-wrap: wrap;        /* horizontal */
+    align-items: center;
+    gap: 4px;
+    padding: 2px;
+    min-height: 32px;
+    font-size: 14px;
+}
     </style>
 </head>
 
@@ -705,7 +752,7 @@ body {
 
         <div class="campo">
     <label>Sexo:</label>
-    <input type="text" name="sexo" id="sexo" required placeholder="H = Hombre / M = Mujer">
+    <input type="text" name="sexo" id="sexo" required placeholder="M = Masculino / F = Femenino">
 </div>
 
         <div class="campo">
@@ -792,16 +839,15 @@ body {
         </div>
 
 <div class="campo completo">
-    <label>Examen solicitado:</label>
-    <select class="buscador" name="examen_solicitado" id="examen_solicitado" required>
-        <option value="">Seleccione o escriba...</option>
-
-        <?php while($e = $examenes->fetch_assoc()) { ?>
-            <option value="<?php echo $e['id']; ?>">
-                <?php echo $e['nombre']; ?>
-            </option>
+    <label>Exámenes solicitados (máx. 3):</label>
+    <select class="buscador" id="examenes-multiple" name="examenes_solicitados[]" multiple="multiple" required>
+        <?php 
+        $examenes->data_seek(0);
+        while($e = $examenes->fetch_assoc()) { ?>
+            <option value="<?= $e['id'] ?>"><?= $e['nombre'] ?></option>
         <?php } ?>
     </select>
+    <p style="font-size:12px; color:#64748b;">Seleccione hasta 3 exámenes</p>
 </div>
         <div class="campo completo">
             <label>Diagnóstico:</label>
@@ -836,6 +882,25 @@ body {
     allowClear: false,
     width: '100%',
     dropdownParent: $('body')
+});
+// Limitar selección a 3 exámenes
+$('#examenes-multiple').select2({
+    placeholder: "Seleccione hasta 3 exámenes",
+    maximumSelectionLength: 3, // Limita a 3
+    width: '100%',
+    allowClear: true
+});
+
+// Mensaje si se alcanza el máximo
+$('#examenes-multiple').on('select2:select', function(e) {
+    if ($(this).select2('data').length > 3) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Máximo alcanzado',
+            text: 'Solo puede seleccionar hasta 3 exámenes.',
+            confirmButtonColor: "#2563eb"
+        });
+    }
 });
 $('#convenio').select2('destroy').select2({
     placeholder: "Seleccione o escriba...",
@@ -1151,10 +1216,10 @@ sexoInput.addEventListener("keydown", function(e) {
 
         let valor = this.value.trim().toLowerCase();
 
-        if (valor === "h" || valor === "hombre") {
-            this.value = "Hombre";
-        } else if (valor === "m" || valor === "mujer") {
-            this.value = "Mujer";
+        if (valor === "m" || valor === "masculino") {
+            this.value = "Masculino";
+        } else if (valor === "f" || valor === "femenino") {
+            this.value = "femenino";
         }
 
         // Ahora va al siguiente campo vacío, no borra el autocompletado
@@ -1189,12 +1254,12 @@ sexoInput.addEventListener("input", function() {
 
     let valor = this.value.trim().toLowerCase();
 
-    if (valor === "h") {
-        this.value = "Hombre";
+    if (valor === "m") {
+        this.value = "Masculino";
     }
 
-    if (valor === "m") {
-        this.value = "Mujer";
+    if (valor === "f") {
+        this.value = "Femenino";
     }
 });
 

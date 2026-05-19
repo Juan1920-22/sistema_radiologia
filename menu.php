@@ -1028,8 +1028,7 @@ body::before {
 
     <div class="bienvenida">
         <h2>Panel principal</h2>
-        <p>
-            Desde este panel podrás registrar, consultar y organizar la información ecográfica de manera segura, ordenada y eficiente.
+        <p> Desde este panel podrás registrar, consultar y organizar la información ecográfica de manera segura, ordenada y eficiente.
 Accede rápidamente a los módulos principales, controla los historiales de pacientes y optimiza tu trabajo diario para brindar una atención más ágil y precisa.</p>
 
 <p>✨ Tu trabajo es importante y aquí encontrarás la herramienta perfecta para hacerlo aún mejor. ✨
@@ -1052,11 +1051,6 @@ Accede rápidamente a los módulos principales, controla los historiales de paci
                     <option value="mes" <?php if($filtro_dashboard == 'mes') echo 'selected'; ?>>
                         Este mes
                     </option>
-
-                    <option value="anio" <?php if($filtro_dashboard == 'anio') echo 'selected'; ?>>
-                        Este año
-                    </option>
-
                     <option value="todos" <?php if($filtro_dashboard == 'todos') echo 'selected'; ?>>
                         Todos
                     </option>
@@ -1135,7 +1129,63 @@ Accede rápidamente a los módulos principales, controla los historiales de paci
         <div class="chart-box">
             <canvas id="graficoRango"></canvas>
         </div>
+     <div style="text-align:right; margin-top:10px;">
+    <button id="btnImprimirGrafico" 
+            style="padding:8px 16px; border:none; border-radius:8px; background:#2563eb; color:white; cursor:pointer; font-weight:bold;">
+        Imprimir gráfico
+    </button>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctxRango = document.getElementById('graficoRango');
+
+    // Inicializar gráfico de comparación de años
+    if(ctxRango){
+        new Chart(ctxRango, {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode($labelsRango); ?>,
+                datasets: [{
+                    label: 'Ecografías registradas',
+                    data: <?php echo json_encode($valoresRango); ?>,
+                    backgroundColor: '#12dad0',
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    // Función para imprimir
+    document.getElementById('btnImprimirGrafico').addEventListener('click', function() {
+    const canvas = document.getElementById('graficoRango');
+    if(!canvas) return;
+
+    const ventana = window.open('', '_blank');
+    ventana.document.write('<html><head><title>Imprimir gráfico</title>');
+    ventana.document.write('<style>');
+    ventana.document.write('body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }');
+    ventana.document.write('img { width: 100%; max-width: 1200px; }'); // ajuste ancho máximo
+    ventana.document.write('</style>');
+    ventana.document.write('</head><body>');
+    ventana.document.write('<img src="' + canvas.toDataURL() + '" />');
+    ventana.document.write('</body></html>');
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
+});
+    }
+    );
+</script>
+</div>   
     </div>
+    
 </section>
 <section class="zona-meta">
 <div class="control-meta">
